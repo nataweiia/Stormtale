@@ -1,0 +1,118 @@
+#MainGrid {
+-fx-background-image: url("images/bg.jpg");
+-fx-font-family: "Verdana", sans-serif;
+}
+
+#MainField {
+-fx-font-size: 16;
+-fx-padding: 10px;
+-fx-font-style: italic;
+
+-fx-border-radius: 4px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 3px;
+}
+
+#MainScroll {
+-fx-background-color: rgba(255,255,255,0.7);
+}
+
+#ButtonGrid {
+-fx-border-image-source: url("images/scroll.png");
+-fx-border-image-insets: -40;
+-fx-border-image-repeat: stretch;
+-fx-border-image-width: 30, 30;
+-fx-border-image-slice: 175 165 fill;
+}
+
+#Button {
+-fx-background-color: rgba(255,255,255,1);
+-fx-font-size: 14;
+-fx-border-radius: 4px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 3px;
+}
+
+#Button:hover {
+-fx-background-color: rgba(229, 229, 229, 1);
+}
+
+#DisButton {
+-fx-background-color: rgba(255,255,255,1);
+-fx-font-size: 14;
+-fx-border-radius: 4px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 3px;
+-fx-opacity: 0.6;
+-fx-cursor: not-allowed;
+}
+
+#MenuButton {
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 14;
+-fx-border-radius: 4px;
+}
+
+#SaveMenu {
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 1px;
+}
+
+#SaveSlot {
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 1px;
+}
+
+#PopUp {
+-fx-background-color: rgba(0,0,0,0.7);
+}
+
+.tooltip {
+-fx-background-color: rgba(255,255,255,1);
+-fx-text-fill: rgba(0, 0, 0, 1);
+-fx-border-radius: 3px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 2px;
+}
+
+.scroll-pane {
+    -fx-background-color: rgba(255,255,255,1);
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+.increment-button, .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(73, 147, 112, 0.8);
+    -fx-background-radius: 5em;
+}
+
+.scroll-pane > .corner {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: rgba(73, 147, 112, 0.8);
+}
+

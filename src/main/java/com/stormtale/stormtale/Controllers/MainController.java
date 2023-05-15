@@ -12,10 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.fxml.Initializable;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -42,6 +39,8 @@ public class MainController implements Initializable{
     @FXML
     Pane MainPane;
 
+    World world;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,6 +65,17 @@ public class MainController implements Initializable{
         Buttons.addButton(ButtonGrid, "",1,3);
         Buttons.addButton(ButtonGrid, "",1,4);
         Buttons.addButton(ButtonGrid, "",2,0);*/
+        Button newGame = new Button();
+        setButton(newGame,"Новая игра",0,0);
+        newGame.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                World newWorld = new World();
+                world = newWorld;
+                MainCharacter mc = new MainCharacter();
+                world.setMainCharacter(mc);
+                characterCreation(mc);
+            }
+        });
         Button button = new Button();
         setButtonHover(button,"11", "Вступительный текст о том как офигенна и восхитительна наша игра.\nЭто подсказка",2,1);
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -74,13 +84,13 @@ public class MainController implements Initializable{
                 //showSaveMenu();
                 //closeMenu();
                 //showPopUp();
-                characterCreation();
+                //characterCreation();
             }
         });
         Buttons.addButton(ButtonGrid, "",2,2);
         Buttons.addButton(ButtonGrid, "",2,3);
         Buttons.addButton(ButtonGrid, "",2,4);
-        //showSaveMenu();
+        showSaveMenu();
     }
 
     private void setButton (Button button, String text, int row, int column) {
@@ -177,37 +187,51 @@ public class MainController implements Initializable{
 
     private void showSaveMenu () {
         GridPane SaveMenu = new GridPane();
-        SaveMenu.setId("SaveMenu");
+        SaveMenu.setId("Menu");
         SaveMenu.setPrefWidth(520);
         for (int i = 0; i < 10; i++) {
             RowConstraints row = new RowConstraints(50);
             SaveMenu.getRowConstraints().add(row);
-            HBox SaveSlot = new HBox(15);
-            SaveSlot.setId("SaveSlot");
+            HBox SaveSlot = new HBox(5);
+            SaveSlot.setId("MenuSlot");
             SaveSlot.setPrefWidth(SaveMenu.getPrefWidth());
-            SaveSlot.setPadding(new Insets(10, 10, 10, 10));
+            SaveSlot.setPadding(new Insets(5, 5, 5, 5));
             SaveSlot.setAlignment(Pos.CENTER_LEFT);
             SaveMenu.add(SaveSlot,0,i);
             SaveMenu.setHalignment(SaveSlot, HPos.CENTER);
             Button SaveButton = new Button();
             SaveButton.setText("Сохранить");
             SaveButton.setTextFill(Color.WHITE);
-            SaveButton.setPrefSize(110,25);
+            SaveButton.setPrefSize(85,25);
+            SaveButton.setMinSize(85,25);
             SaveButton.setId("MenuButton");
             SaveSlot.getChildren().add(SaveButton);
+            Button LoadButton = new Button();
+            LoadButton.setText("Загрузить");
+            LoadButton.setTextFill(Color.WHITE);
+            LoadButton.setPrefSize(85,25);
+            LoadButton.setMinSize(85,25);
             int j = i;
-
-            World world = new World();
-
             String filePath = "Saves/Save" + j + ".sav";
             File saveFile = new File(filePath);
             Label name = new Label();
+            name.setFont(new Font(12));
             if (saveFile.exists()) {
-                name.setText(world.getCurrentLocation() + ", " + world.getCurrentTime().getCurrentTime());
+                try {
+                    FileInputStream fileIn = new FileInputStream(filePath);
+                    ObjectInputStream in = new ObjectInputStream(fileIn);
+                    World tempWorld = (World) in.readObject();
+                    name.setText(tempWorld.getCurrentLocation() + ", " + tempWorld.getCurrentTime().getCurrentTime());
+                    in.close();
+                    fileIn.close();
+                } catch (IOException | ClassNotFoundException c) {
+                    c.printStackTrace();
+                }
+                LoadButton.setId("MenuButton");
             } else {
                 name.setText("---");
+                LoadButton.setId("MenuDisButton");
             }
-            name.setFont(new Font(16));
             SaveButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     if (saveFile.exists()) {
@@ -244,10 +268,27 @@ public class MainController implements Initializable{
                         } catch (IOException i) {
                             i.printStackTrace();
                         }
+                        LoadButton.setId("MenuButton");
                     }
                     name.setText(world.getCurrentLocation() + ", " + world.getCurrentTime().getCurrentTime());
                 }
             });
+            LoadButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent e) {
+                    if (saveFile.exists()) {
+                        try {
+                            FileInputStream fileIn = new FileInputStream(filePath);
+                            ObjectInputStream in = new ObjectInputStream(fileIn);
+                            world = (World) in.readObject();
+                            in.close();
+                            fileIn.close();
+                        } catch (IOException | ClassNotFoundException c) {
+                            c.printStackTrace();
+                        }
+                    }
+                }
+            });
+            SaveSlot.getChildren().add(LoadButton);
             SaveSlot.getChildren().add(name);
             Region space = new Region();
             HBox.setHgrow(space,Priority.ALWAYS);
@@ -255,7 +296,8 @@ public class MainController implements Initializable{
             Button DeleteButton = new Button();
             DeleteButton.setText("Удалить");
             DeleteButton.setTextFill(Color.WHITE);
-            DeleteButton.setPrefSize(90,25);
+            DeleteButton.setPrefSize(80,25);
+            DeleteButton.setMinSize(80,25);
             DeleteButton.setId("MenuButton");
             SaveSlot.getChildren().add(DeleteButton);
             DeleteButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -271,33 +313,26 @@ public class MainController implements Initializable{
         MainPane.getChildren().add(SaveMenu);
     }
 
-    private void characterCreation() {
+    private void characterCreation(MainCharacter mc) {
         clearMainText();
-        MainCharacter mc = new MainCharacter();
-        //addText("testtest\n");
-        //TextField nameField = new TextField();
-        //MainField.getChildren().add(nameField);
         clearButtons();
         addText("Вступление");
-        Button next = new Button("Далее");
+        Button next = new Button();
+        setButton(next,"Далее",0,0);
         next.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                clearMainText();
-                clearButtons();
                 chooseClass(mc);
             }
         });
-
-
-        //World.addCharacter(mc);
-        //hideMainText();
     }
 
     private void chooseClass(MainCharacter mc) {
+        clearMainText();
+        clearButtons();
         addText("Выбор класса\n\n");
-        addText("САМУРАЙ\n\nОписание самурая");
-        addText("УЧЕНЫЙ\n\nОписание ученого");
-        addText("ПРОХИНДЕЙ\n\nОписание прохиндея");
+        addText("САМУРАЙ\nОписание самурая\n\n");
+        addText("УЧЕНЫЙ\nОписание ученого\n\n");
+        addText("ПРОХИНДЕЙ\nОписание прохиндея\n\n");
         Button samurai = new Button();
         setButton(samurai,"Самурай",0,0);
         samurai.setOnAction(new EventHandler<ActionEvent>() {
@@ -305,8 +340,48 @@ public class MainController implements Initializable{
                 clearMainText();
                 clearButtons();
                 mc.setCharacterClass("Самурай");
+                chooseStats(mc);
             }
         });
+        Button scholar = new Button();
+        setButton(scholar,"Ученый",0,1);
+        scholar.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                clearMainText();
+                clearButtons();
+                mc.setCharacterClass("Ученый");
+                chooseStats(mc);
+            }
+        });
+        Button rascal = new Button();
+        setButton(rascal,"Прохиндей",0,2);
+        rascal.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                mc.setCharacterClass("Прохиндей");
+                chooseStats(mc);
+            }
+        });
+    }
+
+    private void chooseStats (MainCharacter mc) {
+        clearMainText();
+        clearButtons();
+        addText("Распределите характеристики:"); //elaborate here
+        GridPane statMenu = new GridPane();
+        statMenu.setId("Menu");
+        statMenu.setPrefWidth(200);
+        RowConstraints firstRow = new RowConstraints(40);
+        statMenu.getRowConstraints().add(firstRow);
+        HBox firstMenuSlot = new HBox(5);
+        for (int i = 1; i < 5; i++) {
+            RowConstraints row = new RowConstraints(40);
+            statMenu.getRowConstraints().add(row);
+            HBox menuSlot = new HBox(5);
+        }
+//        SaveMenu.setPrefWidth(520);
+//        for (int i = 0; i < 10; i++) {
+//            RowConstraints row = new RowConstraints(50);
+//            SaveMenu.getRowConstraints().add(row);
     }
 
     private void closeMenu () {

@@ -21,7 +21,7 @@ public class World implements Serializable {
     //npcs here
 
     public World () {
-        currentLocation = "Стартовая локация";
+        currentLocation = "Очень длинная длинная длинная тестовая стартовая локация";
         currentTime = new Time();
         currentTime.setCurrentTime(660);
     }
@@ -44,5 +44,9 @@ public class World implements Serializable {
 
     public void setMainCharacter(MainCharacter character) {
         mainCharacter = character;
+    }
+
+    public MainCharacter getMainCharacter() {
+        return mainCharacter;
     }
 }

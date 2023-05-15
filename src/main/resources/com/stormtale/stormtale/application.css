@@ -5,7 +5,7 @@
 
 #MainField {
 -fx-font-size: 16;
--fx-padding: 10px;
+-fx-padding: 5px;
 -fx-font-style: italic;
 
 -fx-border-radius: 4px;
@@ -52,17 +52,25 @@
 
 #MenuButton {
 -fx-background-color: rgba(73, 147, 112, 0.8);
--fx-font-size: 14;
+-fx-font-size: 12;
 -fx-border-radius: 4px;
 }
 
-#SaveMenu {
+#MenuDisButton {
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+-fx-opacity: 0.6;
+-fx-cursor: not-allowed;
+}
+
+#Menu {
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;
 -fx-border-width: 1px;
 }
 
-#SaveSlot {
+#MenuSlot {
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;
 -fx-border-width: 1px;

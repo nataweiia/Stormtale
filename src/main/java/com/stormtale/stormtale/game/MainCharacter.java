@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class MainCharacter implements Serializable {
     String name;
 
+    String[] nametest = new String[6];
+
     String characterClass;
     Integer level;
     Integer maxHealth;
@@ -35,6 +37,12 @@ public class MainCharacter implements Serializable {
 
     public MainCharacter () {
         name = "Неизвестно";
+        nametest[0] = "Лобелия";
+        nametest[1] = "Лобелии";
+        nametest[2] = "Лобелии";
+        nametest[3] = "Лобелию";
+        nametest[4] = "Лобелией";
+        nametest[5] = "Лобелии";
         level = 1;
     }
 
@@ -44,6 +52,10 @@ public class MainCharacter implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String[] getNametest() {
+        return nametest;
     }
 
     public void setCharacterClass(String characterClass) {

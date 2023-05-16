@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -85,12 +86,15 @@ public class MainController implements Initializable{
                 //closeMenu();
                 //showPopUp();
                 //characterCreation();
+                MainCharacter mc = new MainCharacter();
+                mc.setCharacterClass("Ученый");
+                chooseStats(mc);
             }
         });
         Buttons.addButton(ButtonGrid, "",2,2);
         Buttons.addButton(ButtonGrid, "",2,3);
         Buttons.addButton(ButtonGrid, "",2,4);
-        showSaveMenu();
+        //showSaveMenu();
     }
 
     private void setButton (Button button, String text, int row, int column) {
@@ -106,7 +110,8 @@ public class MainController implements Initializable{
         button.setText(text);
         button.setPadding(new Insets(5));
         button.setPrefSize(110,35);
-        button.setId("DisButton");
+        button.setId("Button");
+        button.setDisable(true);
         ButtonGrid.setHalignment(button, HPos.CENTER);
         ButtonGrid.add(button, column, row);
     }
@@ -211,6 +216,7 @@ public class MainController implements Initializable{
             LoadButton.setTextFill(Color.WHITE);
             LoadButton.setPrefSize(85,25);
             LoadButton.setMinSize(85,25);
+            LoadButton.setId("MenuButton");
             int j = i;
             String filePath = "Saves/Save" + j + ".sav";
             File saveFile = new File(filePath);
@@ -227,10 +233,9 @@ public class MainController implements Initializable{
                 } catch (IOException | ClassNotFoundException c) {
                     c.printStackTrace();
                 }
-                LoadButton.setId("MenuButton");
             } else {
                 name.setText("---");
-                LoadButton.setId("MenuDisButton");
+                LoadButton.setDisable(true);
             }
             SaveButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
@@ -268,7 +273,7 @@ public class MainController implements Initializable{
                         } catch (IOException i) {
                             i.printStackTrace();
                         }
-                        LoadButton.setId("MenuButton");
+                        LoadButton.setDisable(false);
                     }
                     name.setText(world.getCurrentLocation() + ", " + world.getCurrentTime().getCurrentTime());
                 }
@@ -286,6 +291,7 @@ public class MainController implements Initializable{
                             c.printStackTrace();
                         }
                     }
+                    closeMenu(); //add loaded window here
                 }
             });
             SaveSlot.getChildren().add(LoadButton);
@@ -366,22 +372,238 @@ public class MainController implements Initializable{
     private void chooseStats (MainCharacter mc) {
         clearMainText();
         clearButtons();
-        addText("Распределите характеристики:"); //elaborate here
+        addText("Распределите характеристики:\n\n"); //elaborate here
+        Button cont = new Button();
+        setButton(cont,"Далее",0,0);
+        cont.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                //next window
+                chooseName(mc);
+            }
+        });
+        cont.setDisable(true);
         GridPane statMenu = new GridPane();
         statMenu.setId("Menu");
         statMenu.setPrefWidth(200);
-        RowConstraints firstRow = new RowConstraints(40);
-        statMenu.getRowConstraints().add(firstRow);
-        HBox firstMenuSlot = new HBox(5);
-        for (int i = 1; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             RowConstraints row = new RowConstraints(40);
             statMenu.getRowConstraints().add(row);
-            HBox menuSlot = new HBox(5);
         }
-//        SaveMenu.setPrefWidth(520);
-//        for (int i = 0; i < 10; i++) {
-//            RowConstraints row = new RowConstraints(50);
-//            SaveMenu.getRowConstraints().add(row);
+        HBox firstMenuSlot = new HBox(5);
+        firstMenuSlot.setPadding(new Insets(5, 5, 5, 5));
+        firstMenuSlot.setPrefWidth(200);
+        firstMenuSlot.setAlignment(Pos.CENTER_LEFT);
+        firstMenuSlot.setId("MenuSlot");
+        statMenu.add(firstMenuSlot,0,0);
+        Label statText = new Label("Осталось очков: ");
+        statText.setFont(new Font(16));
+        firstMenuSlot.getChildren().add(statText);
+        final Integer[] statCount = {8,3,3,3,3};
+        final Integer[] stats = {mc.getStrength(), mc.getDexterity(), mc.getMind(), mc.getCharisma()};
+        Label statCountText = new Label(Integer.toString(statCount[0]));
+        statCountText.setFont(new Font(16));
+        firstMenuSlot.getChildren().add(statCountText);
+
+        HBox firstStatSlot = new HBox(5);
+        Label StrengthText = new Label("Сила");
+        Button splus = new Button("+");
+        Button sminus = new Button("-");
+        Label scount = new Label(Integer.toString(mc.getStrength()));
+        setUpStatSlot(firstStatSlot,statMenu,StrengthText,1,splus,sminus,scount);
+
+        HBox secondStatSlot = new HBox(5);
+        Label DexterityText = new Label("Ловкость");
+        Button dplus = new Button("+");
+        Button dminus = new Button("-");
+        Label dcount = new Label(Integer.toString(mc.getDexterity()));
+        setUpStatSlot(secondStatSlot,statMenu,DexterityText,2,dplus,dminus,dcount);
+
+        HBox thirdStatSlot = new HBox(5);
+        Label MindText = new Label("Разум");
+        Button mplus = new Button("+");
+        Button mminus = new Button("-");
+        Label mcount = new Label(Integer.toString(mc.getMind()));
+        setUpStatSlot(thirdStatSlot,statMenu,MindText,3,mplus,mminus,mcount);
+
+        HBox fourthStatSlot = new HBox(5);
+        Label CharismaText = new Label("Харизма");
+        Button cplus = new Button("+");
+        Button cminus = new Button("-");
+        Label ccount = new Label(Integer.toString(mc.getCharisma()));
+        setUpStatSlot(fourthStatSlot,statMenu,CharismaText,4,cplus,cminus,ccount);
+
+        splus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                statCount[0] = statCount[0] - 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[1] = statCount[1] - 1;
+                if (statCount[1] == 0 || statCount[0] == 0) splus.setDisable(true);
+                if (statCount[0] == 0) {
+                    cont.setDisable(false);
+                    dplus.setDisable(true);
+                    mplus.setDisable(true);
+                    cplus.setDisable(true);
+                }
+                sminus.setDisable(false);
+                mc.addStrength(1);
+                scount.setText(Integer.toString(mc.getStrength()));
+            }
+        });
+        sminus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if (statCount[0] == 0) {
+                    cont.setDisable(true);
+                    if (statCount[1] > 0) splus.setDisable(false);
+                    if (statCount[2] > 0) dplus.setDisable(false);
+                    if (statCount[3] > 0) mplus.setDisable(false);
+                    if (statCount[4] > 0) cplus.setDisable(false);
+                }
+                statCount[0] = statCount[0] + 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[1] = statCount[1] + 1;
+                mc.substractStrength(1);
+                if (mc.getStrength() == stats[0]) sminus.setDisable(true);
+                splus.setDisable(false);
+                scount.setText(Integer.toString(mc.getStrength()));
+            }
+        });
+        dplus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                statCount[0] = statCount[0] - 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[2] = statCount[2] - 1;
+                if (statCount[2] == 0 || statCount[0] == 0) dplus.setDisable(true);
+                if (statCount[0] == 0) {
+                    splus.setDisable(true);
+                    mplus.setDisable(true);
+                    cplus.setDisable(true);
+                    cont.setDisable(false);
+                }
+                dminus.setDisable(false);
+                mc.addDexterity(1);
+                dcount.setText(Integer.toString(mc.getDexterity()));
+            }
+        });
+        dminus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if (statCount[0] == 0) {
+                    cont.setDisable(true);
+                    if (statCount[1] > 0) splus.setDisable(false);
+                    if (statCount[2] > 0) dplus.setDisable(false);
+                    if (statCount[3] > 0) mplus.setDisable(false);
+                    if (statCount[4] > 0) cplus.setDisable(false);
+                }
+                statCount[0] = statCount[0] + 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[2] = statCount[2] + 1;
+                mc.substractDexterity(1);
+                if (mc.getDexterity() == stats[1]) dminus.setDisable(true);
+                dplus.setDisable(false);
+                dcount.setText(Integer.toString(mc.getDexterity()));
+            }
+        });
+        mplus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                statCount[0] = statCount[0] - 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[3] = statCount[3] - 1;
+                if (statCount[3] == 0 || statCount[0] == 0) mplus.setDisable(true);
+                if (statCount[0] == 0) {
+                    splus.setDisable(true);
+                    dplus.setDisable(true);
+                    cplus.setDisable(true);
+                    cont.setDisable(false);
+                }
+                mminus.setDisable(false);
+                mc.addMind(1);
+                mcount.setText(Integer.toString(mc.getMind()));
+            }
+        });
+        mminus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if (statCount[0] == 0) {
+                    cont.setDisable(true);
+                    if (statCount[1] > 0) splus.setDisable(false);
+                    if (statCount[2] > 0) dplus.setDisable(false);
+                    if (statCount[3] > 0) mplus.setDisable(false);
+                    if (statCount[4] > 0) cplus.setDisable(false);
+                }
+                statCount[0] = statCount[0] + 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[3] = statCount[3] + 1;
+                mc.substractMind(1);
+                if (mc.getMind() == stats[2]) mminus.setDisable(true);
+                mplus.setDisable(false);
+                mcount.setText(Integer.toString(mc.getMind()));
+            }
+        });
+        cplus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                statCount[0] = statCount[0] - 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[4] = statCount[4] - 1;
+                if (statCount[4] == 0 || statCount[0] == 0) cplus.setDisable(true);
+                if (statCount[0] == 0) {
+                    splus.setDisable(true);
+                    dplus.setDisable(true);
+                    mplus.setDisable(true);
+                    cont.setDisable(false);
+                }
+                cminus.setDisable(false);
+                mc.addCharisma(1);
+                ccount.setText(Integer.toString(mc.getCharisma()));
+            }
+        });
+        cminus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if (statCount[0] == 0) {
+                    cont.setDisable(true);
+                    if (statCount[1] > 0) splus.setDisable(false);
+                    if (statCount[2] > 0) dplus.setDisable(false);
+                    if (statCount[3] > 0) mplus.setDisable(false);
+                    if (statCount[4] > 0) cplus.setDisable(false);
+                }
+                statCount[0] = statCount[0] + 1;
+                statCountText.setText(Integer.toString(statCount[0]));
+                statCount[4] = statCount[4] + 1;
+                mc.substractCharisma(1);
+                if (mc.getCharisma() == stats[3]) cminus.setDisable(true);
+                cplus.setDisable(false);
+                ccount.setText(Integer.toString(mc.getCharisma()));
+            }
+        });
+
+        MainField.getChildren().add(statMenu);
+    }
+
+    private void setUpStatSlot (HBox statSlot, GridPane statMenu, Label text, Integer number, Button plus, Button minus, Label count) {
+        statSlot.setPadding(new Insets(5, 5, 5, 5));
+        statSlot.setPrefWidth(200);
+        statSlot.setAlignment(Pos.CENTER_LEFT);
+        statSlot.setId("MenuSlot");
+        statMenu.add(statSlot,0,number);
+        text.setFont(new Font(16));
+        statSlot.getChildren().add(text);
+        Region space = new Region();
+        HBox.setHgrow(space,Priority.ALWAYS);
+        statSlot.getChildren().add(space);
+        minus.setId("MenuButton");
+        minus.setTextFill(Color.WHITE);
+        minus.setPrefWidth(25);
+        minus.setDisable(true);
+        statSlot.getChildren().add(minus);
+        count.setFont(new Font(16));
+        statSlot.getChildren().add(count);
+        plus.setId("MenuButton");
+        plus.setTextFill(Color.WHITE);
+        plus.setPrefWidth(25);
+        statSlot.getChildren().add(plus);
+    }
+
+    private void chooseName (MainCharacter mc) {
+        clearMainText();
+        clearButtons();
+        addText(mc.getNametest()[1]);
     }
 
     private void closeMenu () {

@@ -56,14 +56,6 @@
 -fx-border-radius: 4px;
 }
 
-#MenuDisButton {
--fx-background-color: rgba(73, 147, 112, 0.8);
--fx-font-size: 12;
--fx-border-radius: 4px;
--fx-opacity: 0.6;
--fx-cursor: not-allowed;
-}
-
 #Menu {
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;

@@ -88,7 +88,9 @@ public class MainController implements Initializable{
                 //characterCreation();
                 MainCharacter mc = new MainCharacter();
                 mc.setCharacterClass("Ученый");
-                chooseStats(mc);
+                mc.setFemale(true);
+                //chooseStats(mc);
+                chooseName(mc);
             }
         });
         Buttons.addButton(ButtonGrid, "",2,2);
@@ -317,6 +319,13 @@ public class MainController implements Initializable{
         SaveMenu.setLayoutY(20);
         hideMainText();
         MainPane.getChildren().add(SaveMenu);
+        Button back = new Button();
+        setButton(back,"Назад",0,0);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                closeMenu();
+            }
+        });
     }
 
     private void characterCreation(MainCharacter mc) {
@@ -327,6 +336,28 @@ public class MainController implements Initializable{
         setButton(next,"Далее",0,0);
         next.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
+                chooseSex(mc);
+            }
+        });
+    }
+
+    private void chooseSex(MainCharacter mc) {
+        clearMainText();
+        clearButtons();
+        addText("Какого пола ваш персонаж?");
+        Button male = new Button();
+        setButton(male,"Мужчина",0,0);
+        male.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                mc.setFemale(false);
+                chooseClass(mc);
+            }
+        });
+        Button female = new Button();
+        setButton(female,"Женщина",0,1);
+        female.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                mc.setFemale(true);
                 chooseClass(mc);
             }
         });
@@ -603,7 +634,11 @@ public class MainController implements Initializable{
     private void chooseName (MainCharacter mc) {
         clearMainText();
         clearButtons();
-        addText(mc.getNametest()[1]);
+        addText("Осталось выбрать имя!\n");
+        TextField name0 = new TextField();
+        name0.setId("NameField");
+        MainField.getChildren().add(name0);
+
     }
 
     private void closeMenu () {

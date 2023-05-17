@@ -6,10 +6,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainCharacter implements Serializable {
-    String name;
 
-    String[] nametest = new String[6];
-
+    String[] name = new String[6];
+    Boolean female;
     String characterClass;
     Integer level;
     Integer maxHealth;
@@ -29,33 +28,31 @@ public class MainCharacter implements Serializable {
     ArrayList<Condition> conditions;
     //equipment slots?
 
-    public MainCharacter(String name, String Class) {
-        this.name = name;
-        setCharacterClass(Class); //make class CharacterClass?
-        level = 1;
-    }
-
     public MainCharacter () {
-        name = "Неизвестно";
-        nametest[0] = "Лобелия";
-        nametest[1] = "Лобелии";
-        nametest[2] = "Лобелии";
-        nametest[3] = "Лобелию";
-        nametest[4] = "Лобелией";
-        nametest[5] = "Лобелии";
+        name[0] = "Неизвестно";
+//        name[1] = "Лобелии";
+//        name[2] = "Лобелии";
+//        name[3] = "Лобелию";
+//        name[4] = "Лобелией";
+//        name[5] = "Лобелии";
         level = 1;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getName() {
+    public String[] getName() {
         return name;
     }
 
-    public String[] getNametest() {
-        return nametest;
+    public void setName(String[] name) {
+        this.name = name;
+    }
+
+    public Boolean getFemale() {
+        return female;
+    }
+
+    public void setFemale(Boolean female) {
+        this.female = female;
     }
 
     public void setCharacterClass(String characterClass) {
@@ -140,6 +137,14 @@ public class MainCharacter implements Serializable {
         currentHealth = currentHealth - health;
         if (currentHealth < 0) currentHealth = 0;
         //death effects? maybe not here?
+    }
+
+    public void setResouseType(String resouseType) {
+        this.resouseType = resouseType;
+    }
+
+    public String getResouseType() {
+        return resouseType;
     }
 
     public void setMaxResourse(Integer resourse) {

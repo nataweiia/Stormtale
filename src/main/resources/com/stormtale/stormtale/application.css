@@ -39,17 +39,6 @@
 -fx-background-color: rgba(229, 229, 229, 1);
 }
 
-#DisButton {
--fx-background-color: rgba(255,255,255,1);
--fx-font-size: 14;
--fx-border-radius: 4px;
--fx-border-color: rgba(73, 147, 112, 0.8);
--fx-border-style: solid;
--fx-border-width: 3px;
--fx-opacity: 0.6;
--fx-cursor: not-allowed;
-}
-
 #MenuButton {
 -fx-background-color: rgba(73, 147, 112, 0.8);
 -fx-font-size: 12;
@@ -70,6 +59,9 @@
 
 #PopUp {
 -fx-background-color: rgba(0,0,0,0.7);
+}
+
+#NameField {
 }
 
 .tooltip {

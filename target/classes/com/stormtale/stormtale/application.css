@@ -8,6 +8,9 @@
 -fx-padding: 5px;
 -fx-font-style: italic;
 
+}
+
+#MainFieldStoredBorder {
 -fx-border-radius: 4px;
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;
@@ -39,17 +42,6 @@
 -fx-background-color: rgba(229, 229, 229, 1);
 }
 
-#DisButton {
--fx-background-color: rgba(255,255,255,1);
--fx-font-size: 14;
--fx-border-radius: 4px;
--fx-border-color: rgba(73, 147, 112, 0.8);
--fx-border-style: solid;
--fx-border-width: 3px;
--fx-opacity: 0.6;
--fx-cursor: not-allowed;
-}
-
 #MenuButton {
 -fx-background-color: rgba(73, 147, 112, 0.8);
 -fx-font-size: 12;
@@ -72,6 +64,17 @@
 -fx-background-color: rgba(0,0,0,0.7);
 }
 
+#NameField {
+-fx-background-color: rgba(255,255,255,0.7);
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 2px;
+}
+
+#NameField:focused {
+-fx-background-color: #007acc, white;
+}
+
 .tooltip {
 -fx-background-color: rgba(255,255,255,1);
 -fx-text-fill: rgba(0, 0, 0, 1);
@@ -82,37 +85,37 @@
 }
 
 .scroll-pane {
-    -fx-background-color: rgba(255,255,255,1);
+-fx-background-color: rgba(255,255,255,1);
 }
 
 .scroll-bar:horizontal, .scroll-bar:vertical{
-    -fx-background-color:transparent;
+-fx-background-color:transparent;
 }
 
 .increment-button, .decrement-button {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+-fx-background-color: transparent;
+-fx-border-color: transparent;
 }
 
 .scroll-bar:horizontal .track,
 .scroll-bar:vertical .track{
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-background-radius: 0em;
+-fx-background-color: transparent;
+-fx-border-color: transparent;
+-fx-background-radius: 0em;
 }
 
 .scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(73, 147, 112, 0.8);
-    -fx-background-radius: 5em;
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-background-radius: 5em;
 }
 
 .scroll-pane > .corner {
-    -fx-background-color: transparent;
+-fx-background-color: transparent;
 }
 
 .scroll-bar > .increment-button > .increment-arrow,
 .scroll-bar > .decrement-button > .decrement-arrow {
-    -fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-background-color: rgba(73, 147, 112, 0.8);
 }
 

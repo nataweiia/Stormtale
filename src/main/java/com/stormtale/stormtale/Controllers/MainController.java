@@ -408,7 +408,6 @@ public class MainController implements Initializable{
         setButton(cont,"Далее",0,0);
         cont.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                //next window
                 chooseName(mc);
             }
         });
@@ -462,7 +461,6 @@ public class MainController implements Initializable{
         Button cminus = new Button("-");
         Label ccount = new Label(Integer.toString(mc.getCharisma()));
         setUpStatSlot(fourthStatSlot,statMenu,CharismaText,4,cplus,cminus,ccount);
-
         splus.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 statCount[0] = statCount[0] - 1;
@@ -635,10 +633,84 @@ public class MainController implements Initializable{
         clearMainText();
         clearButtons();
         addText("Осталось выбрать имя!\n");
+        String[] DefaultNames = new String[6];
+        if (mc.getFemale()) {
+            DefaultNames[0] = "Кира";
+            DefaultNames[1] = "Киры";
+            DefaultNames[2] = "Кире";
+            DefaultNames[3] = "Киру";
+            DefaultNames[4] = "Кирой";
+            DefaultNames[5] = "Кире";
+        } else {
+            DefaultNames[0] = "Джин";
+            DefaultNames[1] = "Джина";
+            DefaultNames[2] = "Джину";
+            DefaultNames[3] = "Джина";
+            DefaultNames[4] = "Джином";
+            DefaultNames[5] = "Джине";
+        }
         TextField name0 = new TextField();
         name0.setId("NameField");
+        name0.setPrefWidth(110);
+        name0.setText(DefaultNames[0]);
         MainField.getChildren().add(name0);
-
+        if (mc.getFemale()) {
+            addText(" вошла в чайную.\n");
+        } else {
+            addText(" вошел в чайную.\n");
+        }
+        TextField name1 = new TextField();
+        name1.setId("NameField");
+        name1.setPrefWidth(110);
+        name1.setText(DefaultNames[1]);
+        addText("Все обрадовались приходу ");
+        MainField.getChildren().add(name1);
+        addText(".\n");
+        TextField name2 = new TextField();
+        name2.setId("NameField");
+        name2.setPrefWidth(110);
+        name2.setText(DefaultNames[2]);
+        addText("Одна из служанок подала ");
+        MainField.getChildren().add(name2);
+        addText(" чашку чая.\n");
+        TextField name3 = new TextField();
+        name3.setId("NameField");
+        name3.setPrefWidth(110);
+        name3.setText(DefaultNames[3]);
+        addText("Старый знакомый пришласил ");
+        MainField.getChildren().add(name3);
+        addText(" сыграть раунд в го.\n");
+        TextField name4 = new TextField();
+        name4.setId("NameField");
+        name4.setPrefWidth(110);
+        name4.setText(DefaultNames[4]);
+        addText("Он был очень впечатлен ");
+        MainField.getChildren().add(name4);
+        addText(" на прошлом турнире.\n");
+        TextField name5 = new TextField();
+        name5.setId("NameField");
+        name5.setPrefWidth(110);
+        name5.setText(DefaultNames[5]);
+        addText("Одна из наблюдающих девушек упомянула, что новые одеяния прекрасно смотрятся на ");
+        MainField.getChildren().add(name5);
+        addText(".\n");
+        String[] name = new String[6];
+        Button cont = new Button();
+        setButton(cont,"Далее",0,0);
+        cont.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                //confirmation popup?
+                clearMainText();
+                clearButtons();
+                name[0] = name0.getText();
+                name[1] = name1.getText();
+                name[2] = name2.getText();
+                name[3] = name3.getText();
+                name[4] = name4.getText();
+                name[5] = name5.getText();
+                mc.setName(name);
+            }
+        });
     }
 
     private void closeMenu () {

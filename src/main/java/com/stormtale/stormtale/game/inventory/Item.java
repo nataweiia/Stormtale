@@ -5,9 +5,8 @@ public class Item {
     String type;
     String description;
     String rarity;
-
     Integer value;
-
+    Integer ID;
     public Item (String n, String t, String d, String r) {
         name = n;
         type = t;
@@ -49,6 +48,10 @@ public class Item {
         return item;
     }
 
+    public Integer getID() {
+        return ID;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -68,4 +71,6 @@ public class Item {
     public void setValue(Integer value) {
         this.value = value;
     }
+
+    public void setID(Integer ID) { this.ID = ID; }
 }

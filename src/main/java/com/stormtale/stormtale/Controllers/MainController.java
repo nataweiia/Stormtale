@@ -632,7 +632,7 @@ public class MainController implements Initializable{
     private void chooseName (MainCharacter mc) {
         clearMainText();
         clearButtons();
-        addText("Осталось выбрать имя!\n");
+        addText("Осталось выбрать имя!\n\n");
         String[] DefaultNames = new String[6];
         if (mc.getFemale()) {
             DefaultNames[0] = "Кира";
@@ -751,6 +751,7 @@ public class MainController implements Initializable{
         shade.prefWidthProperty().bind(MainGrid.widthProperty());
         shade.prefHeightProperty().bind(MainGrid.heightProperty());
         PopUpStack.getChildren().add(shade);
+        //make method with window that needs to be shown, add window as argument here?
         Button close = new Button("close");
         PopUpStack.getChildren().add(close);
         close.setOnAction(new EventHandler<ActionEvent>() {

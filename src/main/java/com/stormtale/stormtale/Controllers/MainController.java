@@ -742,8 +742,7 @@ public class MainController implements Initializable{
         MainField.getChildren().add(text);
     }
 
-
-    private void showPopUp () { //WIP
+    private void dontshowPopUp (Pane window) { //WIP
         StackPane PopUpStack = new StackPane();
         PopUpStack.setId("PopUp");
         MainGrid.add(PopUpStack,0,0,3,2);
@@ -759,5 +758,19 @@ public class MainController implements Initializable{
                 MainGrid.getChildren().remove(PopUpStack);
             }
         });
+    }
+
+    private void showPopUp (StackPane PopUpStack) { //WIP, buttons here too?
+        PopUpStack.setId("PopUp");
+        MainGrid.add(PopUpStack,0,0,3,2);
+        Region shade = new Region();
+        shade.prefWidthProperty().bind(MainGrid.widthProperty());
+        shade.prefHeightProperty().bind(MainGrid.heightProperty());
+        PopUpStack.getChildren().add(shade);
+        //make method with window that needs to be shown, add window as argument here?
+    }
+
+    private void confirmationWindow (Pane window, Button yes, Button no) {
+        window.setPrefSize(200,400);
     }
 }

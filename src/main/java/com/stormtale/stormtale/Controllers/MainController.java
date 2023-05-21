@@ -770,7 +770,10 @@ public class MainController implements Initializable{
         //make method with window that needs to be shown, add window as argument here?
     }
 
-    private void confirmationWindow (Pane window, Button yes, Button no) {
+    private void confirmationWindow (StackPane PopUpStack, Button yes, Button no) {
+        Pane window = new Pane();
         window.setPrefSize(200,400);
+        window.getChildren().add(yes);
+        window.getChildren().add(no);
     }
 }

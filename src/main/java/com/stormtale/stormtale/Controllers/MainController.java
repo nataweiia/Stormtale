@@ -762,11 +762,12 @@ public class MainController implements Initializable{
 
     private void showPopUp (StackPane PopUpStack) { //WIP, buttons here too?
         PopUpStack.setId("PopUp");
-        MainGrid.add(PopUpStack,0,0,3,2);
+        //MainGrid.add(PopUpStack,0,0,3,2);  do it outside?
         Region shade = new Region();
         shade.prefWidthProperty().bind(MainGrid.widthProperty());
         shade.prefHeightProperty().bind(MainGrid.heightProperty());
         PopUpStack.getChildren().add(shade);
+
         //make method with window that needs to be shown, add window as argument here?
     }
 

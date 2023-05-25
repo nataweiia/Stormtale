@@ -27,6 +27,15 @@ public abstract class CharacterTemplate {
     //equipment slots?
 
 
+    public void showProfile() {
+        //Pane contains whole thing
+        //picture in frame, can be clicked to fullsize
+        //2 progress bars for health and resourse, bind progress to current? test later
+        //space for conditions, bind here also?
+        //name!!! maybe clickable to char window?
+        //set sizes, define how to choose space, mc always first, overrride maybe? or just show mc first, idk
+    }
+
     public String[] getName() {
         return name;
     }

@@ -28,6 +28,7 @@ public abstract class CharacterTemplate {
 
 
     public void showProfile() {
+        //check for serializable
         //Pane contains whole thing
         //picture in frame, can be clicked to fullsize
         //2 progress bars for health and resourse, bind progress to current? test later

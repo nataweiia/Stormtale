@@ -1,6 +1,10 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.inventory.Inventory;
+import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
@@ -27,8 +31,15 @@ public abstract class CharacterTemplate {
     //equipment slots?
 
 
-    public void showProfile() {
+    public void showProfile(VBox ProfileBox) {
         //check for serializable
+        Pane profilePane = new Pane();
+        profilePane.setId("Menu");
+        profilePane.setPrefSize(30,30);
+        ProgressBar healthBar = new ProgressBar();
+        healthBar.setProgress(currentHealth / maxHealth);
+        
+        ProfileBox.getChildren().add(profilePane);
         //Pane contains whole thing
         //picture in frame, can be clicked to fullsize
         //2 progress bars for health and resourse, bind progress to current? test later

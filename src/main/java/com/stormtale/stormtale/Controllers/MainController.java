@@ -40,6 +40,9 @@ public class MainController implements Initializable{
     @FXML
     Pane MainPane;
 
+    @FXML
+    VBox ProfileBox;
+
     World world;
 
 
@@ -86,11 +89,18 @@ public class MainController implements Initializable{
                 //closeMenu();
                 //showPopUp();
                 //characterCreation();
+                World newWorld = new World();
+                world = newWorld;
                 MainCharacter mc = new MainCharacter();
                 mc.setCharacterClass("Ученый");
                 mc.setFemale(true);
+                mc.setMaxHealth(15);
+                mc.setCurrentHealth(10);
+                world.setMainCharacter(mc);
+                world.getMainCharacter().showProfile(ProfileBox);
+                //showSaveMenu();
                 //chooseStats(mc);
-                chooseName(mc);
+                //chooseName(mc);
             }
         });
         Buttons.addButton(ButtonGrid, "",2,2);

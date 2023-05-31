@@ -75,6 +75,15 @@
 -fx-background-color: #007acc, white;
 }
 
+#ProfileField {
+-fx-background-color: rgba(255,255,255,1);
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 4px;
+-fx-border-radius: 10px;
+-fx-background-radius: 10px;
+}
+
 .tooltip {
 -fx-background-color: rgba(255,255,255,1);
 -fx-text-fill: rgba(0, 0, 0, 1);

@@ -34,11 +34,12 @@ public abstract class CharacterTemplate {
     public void showProfile(VBox ProfileBox) {
         //check for serializable
         Pane profilePane = new Pane();
-        profilePane.setId("Menu");
-        profilePane.setPrefSize(30,30);
+        profilePane.setId("ProfileField");
+        profilePane.setPrefSize(250,150);
         ProgressBar healthBar = new ProgressBar();
         healthBar.setProgress(currentHealth / maxHealth);
-        
+        ProgressBar resourseBar = new ProgressBar();
+        resourseBar.setProgress(currentResourse / maxResourse);
         ProfileBox.getChildren().add(profilePane);
         //Pane contains whole thing
         //picture in frame, can be clicked to fullsize

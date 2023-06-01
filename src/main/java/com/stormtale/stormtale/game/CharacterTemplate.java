@@ -3,6 +3,7 @@ package com.stormtale.stormtale.game;
 import com.stormtale.stormtale.game.inventory.Inventory;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -29,6 +30,8 @@ public abstract class CharacterTemplate {
     Inventory inventory;
     ArrayList<Condition> conditions;
     //equipment slots?
+    String portraitUrl;
+    String imageUrl;
 
 
     public void showProfile(VBox ProfileBox) {
@@ -36,10 +39,27 @@ public abstract class CharacterTemplate {
         Pane profilePane = new Pane();
         profilePane.setId("ProfileField");
         profilePane.setPrefSize(250,150);
+
+        String url;
+        if (portraitUrl == null) {
+
+        } else {
+            System.out.println("ww");
+        }
+        ImageView portrait = new ImageView();
+
         ProgressBar healthBar = new ProgressBar();
-        healthBar.setProgress(currentHealth / maxHealth);
+        double health = currentHealth;
+        healthBar.setProgress(health / maxHealth);
+        healthBar.setPrefSize(140,30);
+        healthBar.relocate(15,30);
+        //profilePane.getChildren().add(healthBar);
+
         ProgressBar resourseBar = new ProgressBar();
-        resourseBar.setProgress(currentResourse / maxResourse);
+        double progress = currentResourse;
+        System.out.println(progress);
+        resourseBar.setProgress(progress / maxResourse);
+
         ProfileBox.getChildren().add(profilePane);
         //Pane contains whole thing
         //picture in frame, can be clicked to fullsize

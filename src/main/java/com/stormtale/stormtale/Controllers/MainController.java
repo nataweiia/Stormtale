@@ -96,6 +96,8 @@ public class MainController implements Initializable{
                 mc.setFemale(true);
                 mc.setMaxHealth(15);
                 mc.setCurrentHealth(10);
+                mc.setCurrentResourse(10);
+                mc.setMaxResourse(15);
                 world.setMainCharacter(mc);
                 world.getMainCharacter().showProfile(ProfileBox);
                 //showSaveMenu();

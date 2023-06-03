@@ -1,12 +1,19 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.inventory.Inventory;
-import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 public abstract class CharacterTemplate {
@@ -16,9 +23,9 @@ public abstract class CharacterTemplate {
     Integer level;
     Integer maxHealth;
     Integer currentHealth;
-    String resouseType;
-    Integer maxResourse;
-    Integer currentResourse;
+    String resourceType;
+    Integer maxResource;
+    Integer currentResource;
     //armor? resistances?
 
     Integer strength;
@@ -32,42 +39,6 @@ public abstract class CharacterTemplate {
     //equipment slots?
     String portraitUrl;
     String imageUrl;
-
-
-    public void showProfile(VBox ProfileBox) {
-        //check for serializable
-        Pane profilePane = new Pane();
-        profilePane.setId("ProfileField");
-        profilePane.setPrefSize(250,150);
-
-        String url;
-        if (portraitUrl == null) {
-
-        } else {
-            System.out.println("ww");
-        }
-        ImageView portrait = new ImageView();
-
-        ProgressBar healthBar = new ProgressBar();
-        double health = currentHealth;
-        healthBar.setProgress(health / maxHealth);
-        healthBar.setPrefSize(140,30);
-        healthBar.relocate(15,30);
-        //profilePane.getChildren().add(healthBar);
-
-        ProgressBar resourseBar = new ProgressBar();
-        double progress = currentResourse;
-        System.out.println(progress);
-        resourseBar.setProgress(progress / maxResourse);
-
-        ProfileBox.getChildren().add(profilePane);
-        //Pane contains whole thing
-        //picture in frame, can be clicked to fullsize
-        //2 progress bars for health and resourse, bind progress to current? test later
-        //space for conditions, bind here also?
-        //name!!! maybe clickable to char window?
-        //set sizes, define how to choose space, mc always first, overrride maybe? or just show mc first, idk
-    }
 
     public String[] getName() {
         return name;
@@ -99,7 +70,7 @@ public abstract class CharacterTemplate {
                 addLevel(level - this.level);
             }
             if (level < this.level) {
-                substractLevel(this.level - level);
+                subtractLevel(this.level - level);
             }
         }
         //correct things according to level?
@@ -110,7 +81,7 @@ public abstract class CharacterTemplate {
         //correct things here
     }
 
-    public void substractLevel (Integer n) {
+    public void subtractLevel(Integer n) {
         level = level - n;
     }
 
@@ -139,44 +110,44 @@ public abstract class CharacterTemplate {
         if (currentHealth > maxHealth) currentHealth = maxHealth;
     }
 
-    public void substractHealth (Integer health) {
+    public void subtractHealth(Integer health) {
         currentHealth = currentHealth - health;
         if (currentHealth < 0) currentHealth = 0;
         //death effects? maybe not here?
     }
 
-    public void setResouseType(String resouseType) {
-        this.resouseType = resouseType;
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
-    public String getResouseType() {
-        return resouseType;
+    public String getResourceType() {
+        return resourceType;
     }
 
-    public void setMaxResourse(Integer resourse) {
-        maxResourse = resourse;
+    public void setMaxResource(Integer resource) {
+        maxResource = resource;
     }
 
-    public Integer getMaxResourse() {
-        return maxResourse;
+    public Integer getMaxResource() {
+        return maxResource;
     }
 
-    public void setCurrentResourse(Integer resourse) {
-        currentResourse = resourse;
+    public void setCurrentResource(Integer resource) {
+        currentResource = resource;
     }
 
-    public Integer getCurrentResourse() {
-        return currentResourse;
+    public Integer getCurrentResource() {
+        return currentResource;
     }
 
-    public void addResourse (Integer resourse) {
-        currentResourse = currentResourse + resourse;
-        if (currentResourse > maxResourse) currentResourse = maxResourse;
+    public void addResource(Integer resource) {
+        currentResource = currentResource + resource;
+        if (currentResource > maxResource) currentResource = maxResource;
     }
 
-    public void substractResourse (Integer resourse) {
-        currentResourse = currentResourse - resourse;
-        if (currentResourse < 0) currentResourse = 0;
+    public void subtractResource(Integer resource) {
+        currentResource = currentResource - resource;
+        if (currentResource < 0) currentResource = 0;
     }
 
     public void setStrength(Integer strength) {
@@ -191,7 +162,7 @@ public abstract class CharacterTemplate {
         this.strength = this.strength + strength;
     }
 
-    public void substractStrength(Integer strength) {
+    public void subtractStrength(Integer strength) {
         this.strength = this.strength - strength;
         if (this.strength < 1) this.strength = 1;
     }
@@ -208,7 +179,7 @@ public abstract class CharacterTemplate {
         this.dexterity = this.dexterity + dexterity;
     }
 
-    public void substractDexterity(Integer dexterity) {
+    public void subtractDexterity(Integer dexterity) {
         this.dexterity = this.dexterity - dexterity;
         if (this.dexterity < 1) this.dexterity = 1;
     }
@@ -225,7 +196,7 @@ public abstract class CharacterTemplate {
         this.mind = this.mind + mind;
     }
 
-    public void substractMind(Integer mind) {
+    public void subctractMind(Integer mind) {
         this.mind = this.mind - mind;
         if (this.mind < 1) this.mind = 1;
     }
@@ -242,8 +213,24 @@ public abstract class CharacterTemplate {
         this.charisma = this.charisma + charisma;
     }
 
-    public void substractCharisma(Integer charisma) {
+    public void subtractCharisma(Integer charisma) {
         this.charisma = this.charisma - charisma;
         if (this.charisma < 1) this.charisma = 1;
+    }
+
+    public String getPortraitUrl() {
+        return portraitUrl;
+    }
+
+    public void setPortraitUrl(String portraitUrl) {
+        this.portraitUrl = portraitUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

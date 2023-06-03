@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.fxml.Initializable;
 
@@ -18,7 +19,9 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -96,10 +99,10 @@ public class MainController implements Initializable{
                 mc.setFemale(true);
                 mc.setMaxHealth(15);
                 mc.setCurrentHealth(10);
-                mc.setCurrentResourse(10);
-                mc.setMaxResourse(15);
+                mc.setCurrentResource(10);
+                mc.setMaxResource(15);
                 world.setMainCharacter(mc);
-                world.getMainCharacter().showProfile(ProfileBox);
+                showProfile(mc);
                 //showSaveMenu();
                 //chooseStats(mc);
                 //chooseName(mc);
@@ -502,7 +505,7 @@ public class MainController implements Initializable{
                 statCount[0] = statCount[0] + 1;
                 statCountText.setText(Integer.toString(statCount[0]));
                 statCount[1] = statCount[1] + 1;
-                mc.substractStrength(1);
+                mc.subtractStrength(1);
                 if (mc.getStrength() == stats[0]) sminus.setDisable(true);
                 splus.setDisable(false);
                 scount.setText(Integer.toString(mc.getStrength()));
@@ -537,7 +540,7 @@ public class MainController implements Initializable{
                 statCount[0] = statCount[0] + 1;
                 statCountText.setText(Integer.toString(statCount[0]));
                 statCount[2] = statCount[2] + 1;
-                mc.substractDexterity(1);
+                mc.subtractDexterity(1);
                 if (mc.getDexterity() == stats[1]) dminus.setDisable(true);
                 dplus.setDisable(false);
                 dcount.setText(Integer.toString(mc.getDexterity()));
@@ -572,7 +575,7 @@ public class MainController implements Initializable{
                 statCount[0] = statCount[0] + 1;
                 statCountText.setText(Integer.toString(statCount[0]));
                 statCount[3] = statCount[3] + 1;
-                mc.substractMind(1);
+                mc.subctractMind(1);
                 if (mc.getMind() == stats[2]) mminus.setDisable(true);
                 mplus.setDisable(false);
                 mcount.setText(Integer.toString(mc.getMind()));
@@ -607,7 +610,7 @@ public class MainController implements Initializable{
                 statCount[0] = statCount[0] + 1;
                 statCountText.setText(Integer.toString(statCount[0]));
                 statCount[4] = statCount[4] + 1;
-                mc.substractCharisma(1);
+                mc.subtractCharisma(1);
                 if (mc.getCharisma() == stats[3]) cminus.setDisable(true);
                 cplus.setDisable(false);
                 ccount.setText(Integer.toString(mc.getCharisma()));
@@ -723,6 +726,70 @@ public class MainController implements Initializable{
                 mc.setName(name);
             }
         });
+    }
+
+    private void showProfile(MainCharacter character) {
+        Pane profilePane = new Pane();
+        profilePane.setId("ProfileField");
+        profilePane.setPrefSize(255,140);
+
+        String url;
+        if (character.getPortraitUrl() == null) {
+            url = "/com/stormtale/stormtale/images/rooster.png";
+        } else {
+            url = character.getPortraitUrl();
+        }
+        StackPane portraitContainer = new StackPane();
+        Image image = new Image(this.getClass().getResourceAsStream(url));
+        Circle portrait = new Circle(50);
+        portrait.setFill(new ImagePattern(image));
+        Image frameImage = new Image(this.getClass().getResourceAsStream("/com/stormtale/stormtale/images/frame.png"));
+        Rectangle frame = new Rectangle(110,100);
+        frame.setFill(new ImagePattern(frameImage));
+        portraitContainer.getChildren().add(portrait);
+        portraitContainer.getChildren().add(frame);
+        frame.setTranslateX(-5);
+        portraitContainer.relocate(10,20);
+        profilePane.getChildren().add(portraitContainer);
+
+        ProgressBar healthBar = new ProgressBar();
+        healthBar.setId("HealthBar");
+        double health = character.getCurrentHealth();
+        healthBar.setProgress(health / character.getCurrentHealth());
+        healthBar.setPrefSize(120,30);
+        healthBar.relocate(120,25);
+        profilePane.getChildren().add(healthBar);
+
+        ProgressBar resourceBar = new ProgressBar();
+        resourceBar.setId("ResourceBar");
+        double progress = character.getCurrentResource();
+        resourceBar.setProgress(progress / character.getMaxResource());
+        resourceBar.setPrefSize(120,30);
+        resourceBar.relocate(120,65);
+        profilePane.getChildren().add(resourceBar);
+
+        HBox conditions = new HBox();
+        conditions.setPrefSize(120,30);
+        conditions.setSpacing(5);
+        conditions.relocate(120,100);
+        //add conditions here
+        Image testImage = new Image(this.getClass().getResourceAsStream("/com/stormtale/stormtale/images/rooster.png"));
+        Rectangle test = new Rectangle(25,25);
+        test.setFill(new ImagePattern(testImage));
+        Rectangle test2 = new Rectangle(25,25);
+        test2.setFill(new ImagePattern(testImage));
+        conditions.getChildren().add(test);
+        conditions.getChildren().add(test2);
+        profilePane.getChildren().add(conditions);
+
+
+        ProfileBox.getChildren().add(profilePane);
+        //Pane contains whole thing
+        //picture in frame, can be clicked to fullsize
+        //2 progress bars for health and resourse, bind progress to current? test later
+        //space for conditions, bind here also?
+        //name!!! maybe clickable to char window?
+        //set sizes, define how to choose space, mc always first, overrride maybe? or just show mc first, idk
     }
 
     private void closeMenu () {

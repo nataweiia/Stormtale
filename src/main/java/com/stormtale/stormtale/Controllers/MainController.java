@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.fxml.Initializable;
 
@@ -102,6 +104,8 @@ public class MainController implements Initializable{
                 mc.setCurrentResource(10);
                 mc.setMaxResource(15);
                 world.setMainCharacter(mc);
+                world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
+                world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
                 showProfile(mc);
                 //showSaveMenu();
                 //chooseStats(mc);
@@ -732,14 +736,64 @@ public class MainController implements Initializable{
         Pane profilePane = new Pane();
         profilePane.setId("ProfileField");
         profilePane.setPrefSize(255,140);
-
+        StackPane portraitContainer = new StackPane();
         String url;
         if (character.getPortraitUrl() == null) {
             url = "/com/stormtale/stormtale/images/rooster.png";
         } else {
             url = character.getPortraitUrl();
+            if (character.getImageUrl() != null) {
+                portraitContainer.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        StackPane PictureStack = new StackPane();
+                        PictureStack.setId("PopUp");
+                        MainGrid.add(PictureStack,0,0,3,2);
+                        Region shade = new Region();
+                        shade.prefWidthProperty().bind(MainGrid.widthProperty());
+                        shade.prefHeightProperty().bind(MainGrid.heightProperty());
+                        PictureStack.getChildren().add(shade);
+                        Image picture = new Image(this.getClass().getResourceAsStream(character.getImageUrl()));
+                        ImageView pictureView = new ImageView(picture);
+                        pictureView.setPreserveRatio(true);
+                        AnchorPane pane = new AnchorPane();
+                        if (picture.getWidth() > 1000) {
+
+                            pane.setPrefWidth(1000);
+                        }
+                        if (picture.getWidth() > picture.getHeight()) {
+                            if (picture.getWidth() > 1000) {
+                                pictureView.setFitWidth(1000);
+                                pane.setPrefWidth(1000);
+                            } else {
+                                pictureView.setFitWidth(picture.getWidth());
+                            }
+                        } else {
+                            if (picture.getHeight() > 650) {
+                                pictureView.setFitHeight(650);
+                                pane.setPrefHeight(700);
+                            } else {
+                                pictureView.setFitHeight(picture.getHeight() + 50);
+                            }
+                        }
+                        pane.getChildren().add(pictureView);
+                        AnchorPane.setTopAnchor(pictureView,0d);
+                        //make method with window that needs to be shown, add window as argument here?
+                        Button close = new Button("close");
+                        close.setId("Button");
+                        pane.getChildren().add(close);
+                        AnchorPane.setBottomAnchor(close,0d);
+                        close.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override public void handle(ActionEvent e) {
+                                MainGrid.getChildren().remove(PictureStack);
+                            }
+                        });
+                        PictureStack.getChildren().add(pane);
+                    }
+                });
+            }
         }
-        StackPane portraitContainer = new StackPane();
+
         Image image = new Image(this.getClass().getResourceAsStream(url));
         Circle portrait = new Circle(50);
         portrait.setFill(new ImagePattern(image));
@@ -750,12 +804,13 @@ public class MainController implements Initializable{
         portraitContainer.getChildren().add(frame);
         frame.setTranslateX(-5);
         portraitContainer.relocate(10,20);
+
         profilePane.getChildren().add(portraitContainer);
 
         ProgressBar healthBar = new ProgressBar();
         healthBar.setId("HealthBar");
         double health = character.getCurrentHealth();
-        healthBar.setProgress(health / character.getCurrentHealth());
+        healthBar.setProgress(health / character.getMaxHealth());
         healthBar.setPrefSize(120,30);
         healthBar.relocate(120,25);
         profilePane.getChildren().add(healthBar);
@@ -850,10 +905,4 @@ public class MainController implements Initializable{
         //make method with window that needs to be shown, add window as argument here?
     }
 
-    private void confirmationWindow (StackPane PopUpStack, Button yes, Button no) {
-        Pane window = new Pane();
-        window.setPrefSize(200,400);
-        window.getChildren().add(yes);
-        window.getChildren().add(no);
-    }
 }

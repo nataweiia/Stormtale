@@ -9,19 +9,7 @@ import javafx.scene.text.TextFlow;
 
 public class Scene {
 
-    //@FXML
-    //TextFlow MainField;
-
-    public void Clean (TextFlow MainField) {
-        //MainField.getChildren().clear();
-        MainField.getChildren().clear();
-    }
-
-    public static void Add (String string, TextFlow MainField) {
-        //add text to MainField
-        //Label text = new Label(string);
-        Text text = new Text(string);
-        text.setId("MainText");
-        MainField.getChildren().add(text);
+    public void Scene () {
+        
     }
 }

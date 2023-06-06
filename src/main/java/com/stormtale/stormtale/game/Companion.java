@@ -1,4 +1,4 @@
 package com.stormtale.stormtale.game;
 
-public class Сompanion extends NPC {
+public class Companion extends NPC {
 }

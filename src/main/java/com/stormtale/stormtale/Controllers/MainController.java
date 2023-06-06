@@ -53,27 +53,10 @@ public class MainController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //addButton(ButtonGrid);
-        //Scene scene = new Scene();
-        //SceneAdd("Welcome text");
-        //scene.Add("Welcome Text");
         //create with textflow?
-        Scene.Add ("Вступительный текст о том как офигенна и восхитительна наша игра.\n", MainField);
-        Scene.Add ("WelcomeText\n\n", MainField);
-        Scene.Add ("WelcomeText", MainField);
-
-
-        /*Buttons.addButton(ButtonGrid, "",0,0);
-        Buttons.addButton(ButtonGrid, "",0,1);
-        Buttons.addButton(ButtonGrid, "",0,2);
-        Buttons.addButton(ButtonGrid, "",0,3);
-        Buttons.addButton(ButtonGrid, "",0,4);
-        Buttons.addButton(ButtonGrid, "",1,0);
-        Buttons.addButton(ButtonGrid, "",1,1);
-        Buttons.addButton(ButtonGrid, "",1,2);
-        Buttons.addButton(ButtonGrid, "",1,3);
-        Buttons.addButton(ButtonGrid, "",1,4);
-        Buttons.addButton(ButtonGrid, "",2,0);*/
+        addText("Вступительный текст о том как офигенна и восхитительна наша игра.\n");
+        addText("WelcomeText\n\n");
+        addText("WelcomeText");
         Button newGame = new Button();
         setButton(newGame,"Новая игра",0,0);
         newGame.setOnAction(new EventHandler<ActionEvent>() {
@@ -112,9 +95,6 @@ public class MainController implements Initializable{
                 //chooseName(mc);
             }
         });
-        Buttons.addButton(ButtonGrid, "",2,2);
-        Buttons.addButton(ButtonGrid, "",2,3);
-        Buttons.addButton(ButtonGrid, "",2,4);
         //showSaveMenu();
     }
 
@@ -157,6 +137,10 @@ public class MainController implements Initializable{
 
     private void clearButtons () {
         ButtonGrid.getChildren().clear();
+    }
+
+    private void nextScene () {
+
     }
 
     private void displayInventory (Inventory inventory) { //WIP, rework, save in worldstate MB?
@@ -752,43 +736,31 @@ public class MainController implements Initializable{
                         Region shade = new Region();
                         shade.prefWidthProperty().bind(MainGrid.widthProperty());
                         shade.prefHeightProperty().bind(MainGrid.heightProperty());
+                        shade.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent mouseEvent) {
+                                MainGrid.getChildren().remove(PictureStack);
+                            }
+                        });
                         PictureStack.getChildren().add(shade);
                         Image picture = new Image(this.getClass().getResourceAsStream(character.getImageUrl()));
                         ImageView pictureView = new ImageView(picture);
                         pictureView.setPreserveRatio(true);
-                        AnchorPane pane = new AnchorPane();
-                        if (picture.getWidth() > 1000) {
-
-                            pane.setPrefWidth(1000);
-                        }
                         if (picture.getWidth() > picture.getHeight()) {
-                            if (picture.getWidth() > 1000) {
-                                pictureView.setFitWidth(1000);
-                                pane.setPrefWidth(1000);
+                            if (picture.getWidth() > 1100) {
+                                pictureView.setFitWidth(1100);
                             } else {
                                 pictureView.setFitWidth(picture.getWidth());
                             }
                         } else {
-                            if (picture.getHeight() > 650) {
-                                pictureView.setFitHeight(650);
-                                pane.setPrefHeight(700);
+                            if (picture.getHeight() > 750) {
+                                pictureView.setFitHeight(750);
                             } else {
-                                pictureView.setFitHeight(picture.getHeight() + 50);
+                                pictureView.setFitHeight(picture.getHeight());
                             }
                         }
-                        pane.getChildren().add(pictureView);
-                        AnchorPane.setTopAnchor(pictureView,0d);
-                        //make method with window that needs to be shown, add window as argument here?
-                        Button close = new Button("close");
-                        close.setId("Button");
-                        pane.getChildren().add(close);
-                        AnchorPane.setBottomAnchor(close,0d);
-                        close.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override public void handle(ActionEvent e) {
-                                MainGrid.getChildren().remove(PictureStack);
-                            }
-                        });
-                        PictureStack.getChildren().add(pane);
+                        PictureStack.getChildren().add(pictureView);
+
                     }
                 });
             }
@@ -874,35 +846,6 @@ public class MainController implements Initializable{
     private void addText (String string) {
         Text text = new Text(string);
         MainField.getChildren().add(text);
-    }
-
-    private void dontshowPopUp (Pane window) { //WIP
-        StackPane PopUpStack = new StackPane();
-        PopUpStack.setId("PopUp");
-        MainGrid.add(PopUpStack,0,0,3,2);
-        Region shade = new Region();
-        shade.prefWidthProperty().bind(MainGrid.widthProperty());
-        shade.prefHeightProperty().bind(MainGrid.heightProperty());
-        PopUpStack.getChildren().add(shade);
-        //make method with window that needs to be shown, add window as argument here?
-        Button close = new Button("close");
-        PopUpStack.getChildren().add(close);
-        close.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                MainGrid.getChildren().remove(PopUpStack);
-            }
-        });
-    }
-
-    private void showPopUp (StackPane PopUpStack) { //WIP, buttons here too?
-        PopUpStack.setId("PopUp");
-        //MainGrid.add(PopUpStack,0,0,3,2);  do it outside?
-        Region shade = new Region();
-        shade.prefWidthProperty().bind(MainGrid.widthProperty());
-        shade.prefHeightProperty().bind(MainGrid.heightProperty());
-        PopUpStack.getChildren().add(shade);
-
-        //make method with window that needs to be shown, add window as argument here?
     }
 
 }

@@ -50,9 +50,6 @@ public class MainController implements Initializable{
         //SceneAdd("Welcome text");
         //scene.Add("Welcome Text");
         //create with textflow?
-        Scene.Add ("Вступительный текст о том как офигенна и восхитительна наша игра.\n", MainField);
-        Scene.Add ("WelcomeText\n\n", MainField);
-        Scene.Add ("WelcomeText", MainField);
 
 
         /*Buttons.addButton(ButtonGrid, "",0,0);

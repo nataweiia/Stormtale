@@ -34,6 +34,10 @@ public class World implements Serializable {
         return currentTime;
     }
 
+    public void addTime(Integer n) {
+        currentTime.addTime(n);
+    }
+
     public void setCurrentLocation(String location) {
         currentLocation = location;
     }

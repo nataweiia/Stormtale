@@ -139,8 +139,24 @@ public class MainController implements Initializable{
         ButtonGrid.getChildren().clear();
     }
 
-    private void nextScene () {
-
+    private void nextScene (Scene scene) {
+        clearMainText();
+        clearButtons();
+        world.setCurrentLocation(scene.getLocation()); //add map change here
+        world.addTime(5); //randomise, link to time/date label
+        addText(scene.getText());
+        //add buttons
+        //for (Integer i = 0; i < scene.getNumberOfButtons(); i++) {
+        //Button button = scene.getButton(i); not button, smth with lists maybe?
+        //if (button.getType == "move") {      switch case maybe
+        //button.setOnAction      nextScene(button.getScene)
+        //}
+        //if (buttonType(i) == "item" {
+        //button.SetOnAction     mc.addItem(scene.getItem(i));    add Item to inventory
+        //}
+        //if (buttonType(i) == "npc" {
+        //button.SetOnAction     conversation(scene.getNPC(i));    preserve scene?
+        //}
     }
 
     private void displayInventory (Inventory inventory) { //WIP, rework, save in worldstate MB?

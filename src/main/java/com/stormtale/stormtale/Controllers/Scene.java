@@ -1,5 +1,6 @@
 package com.stormtale.stormtale.Controllers;
 
+import com.stormtale.stormtale.World;
 import com.stormtale.stormtale.game.NPC;
 import com.stormtale.stormtale.game.inventory.Item;
 import javafx.fxml.FXML;
@@ -15,13 +16,17 @@ import java.util.ArrayList;
 public class Scene {
     private Integer ID;
     private String text;
-    private ArrayList<ButtonInfo> buttons;
+    private ArrayList<ButtonInfo> buttons = new ArrayList<>();
     private String location;
 
     public void Scene () {
     }
 
     public void Scene (String text) {  //maybe more constructors?
+
+    }
+
+    public void setUpScene (World world) {
 
     }
 

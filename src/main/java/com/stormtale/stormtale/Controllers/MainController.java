@@ -73,11 +73,6 @@ public class MainController implements Initializable{
         setButtonHover(button,"11", "Вступительный текст о том как офигенна и восхитительна наша игра.\nЭто подсказка",2,1);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                //MainScroll.setVisible(true);
-                //showSaveMenu();
-                //closeMenu();
-                //showPopUp();
-                //characterCreation();
                 World newWorld = new World();
                 world = newWorld;
                 MainCharacter mc = new MainCharacter();
@@ -91,9 +86,19 @@ public class MainController implements Initializable{
                 world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
                 world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
                 showProfile(mc);
-                //showSaveMenu();
-                //chooseStats(mc);
-                //chooseName(mc);
+                Scene scene1 = new Scene();
+                Scene scene2 = new Scene();
+                scene1.setText("test text");
+                scene2.setText("some text");
+                ButtonInfo button11 = new ButtonInfo();
+                button11.setName("Далее");
+                button11.setRow(0);
+                button11.setColumn(1);
+                button11.setType("Continue");
+                button11.setNextScene(scene2);
+                scene1.addButton(button11);
+                nextScene(scene1);
+
             }
         });
         //showSaveMenu();
@@ -144,7 +149,7 @@ public class MainController implements Initializable{
         clearMainText();
         clearButtons();
         world.setCurrentLocation(scene.getLocation()); //add map change here
-        world.addTime(5); //randomise, link to time/date label
+        //world.addTime(5); //randomise, link to time/date label
         //scene.setPronouns(world.getMainCharacter()); //for male or female
         //maybe smth like (if !=female)
         addText(scene.getText());

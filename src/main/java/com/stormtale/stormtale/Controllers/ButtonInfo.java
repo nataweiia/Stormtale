@@ -70,8 +70,8 @@ public class ButtonInfo {
         return item;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setType(String type) {
+        this.type = Type.valueOf(type);
     }
 
     public Type getType() {

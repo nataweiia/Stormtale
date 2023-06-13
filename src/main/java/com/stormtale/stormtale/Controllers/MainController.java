@@ -1,6 +1,7 @@
 package com.stormtale.stormtale.Controllers;
 
 import com.stormtale.stormtale.game.MainCharacter;
+import com.stormtale.stormtale.game.NPC;
 import com.stormtale.stormtale.game.inventory.Inventory;
 import com.stormtale.stormtale.game.inventory.Item;
 import com.stormtale.stormtale.World;
@@ -144,13 +145,77 @@ public class MainController implements Initializable{
         clearButtons();
         world.setCurrentLocation(scene.getLocation()); //add map change here
         world.addTime(5); //randomise, link to time/date label
+        //scene.setPronouns(world.getMainCharacter()); //for male or female
+        //maybe smth like (if !=female)
         addText(scene.getText());
+        ArrayList<ButtonInfo> buttons = scene.getButtons();
         //add buttons
-        //for (Integer i = 0; i < scene.getNumberOfButtons(); i++) {
+        for (Integer i = 0; i < buttons.size(); i++) {
+            Button button = new Button();
+            ButtonInfo buttonInfo = buttons.get(i);
+            if (buttonInfo.getAvailability()) {
+                //everything goes here
+                if (buttonInfo.getTooltip() != null) {
+                    setButtonHover(button,buttonInfo.getName(),buttonInfo.getTooltip(),buttonInfo.getRow(),buttonInfo.getColumn());
+                } else {
+                    setButton(button,buttonInfo.getName(),buttonInfo.getRow(),buttonInfo.getColumn());
+                }
+                switch (buttonInfo.getType()) {
+                    case Item:
+                        button.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                addText("\n+1 " + buttonInfo.getItem().getName() + ".");
+                                //do smth with saves here, idk
+                                //maybe keep all scenes in world?
+                                //check with world if already taken or smth
+                                //world.getMainCharacter().addItem(buttonInfo.getItem());
+                                ButtonGrid.getChildren().remove(button);
+                            }
+                        });
+                        break;
+                    case Combat:
+                        //start combat, remember scene
+                        //write in combat optional post-combat scene, if null return to remembered scene
+                        break;
+                    case Continue:
+                        button.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                //do smth with scenes, search through id? open file if nextFile not empty?
+                                nextScene(buttonInfo.getNextScene());
+                            }
+                        });
+                        break;
+                    case Dialogue:
+                        button.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                //map.setVisibility(false); or smth like that
+                                //maybe show portrait window?
+                                NPC dialoguePartisipant = buttonInfo.getNpc(); //dialogue interface?
+                                nextScene(buttonInfo.getNextScene());
+                            }
+                        });
+                        break;
+                    case Movement:
+                        button.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                String location = buttonInfo.getNewLocation();
+                                //move character on map
+                                nextScene(buttonInfo.getNextScene());
+                            }
+                        });
+                        break;
+                }
+            } else {
+                setDisabledButton(button,buttonInfo.getName(),buttonInfo.getRow(),buttonInfo.getColumn());
+            }
         //Button button = scene.getButton(i); not button, smth with lists maybe?
         //if (button.getType == "move") {      switch case maybe
         //button.setOnAction      nextScene(button.getScene)
-        //}
+        }
         //if (buttonType(i) == "item" {
         //button.SetOnAction     mc.addItem(scene.getItem(i));    add Item to inventory
         //}

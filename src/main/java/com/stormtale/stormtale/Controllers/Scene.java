@@ -13,22 +13,16 @@ import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
 
-public class Scene {
+public abstract class Scene {
     private Integer ID;
     private String text;
     private ArrayList<ButtonInfo> buttons = new ArrayList<>();
     private String location;
 
-    public void Scene () {
+    public void Scene () { //make full constructors
     }
 
-    public void Scene (String text) {  //maybe more constructors?
-
-    }
-
-    public void setUpScene (World world) {
-
-    }
+    public abstract void setUpScene (World world);
 
     public void setID(Integer ID) {
         this.ID = ID;

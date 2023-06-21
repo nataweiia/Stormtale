@@ -86,23 +86,33 @@ public class MainController implements Initializable{
                 world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
                 world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
                 showProfile(mc);
-                Scene scene1 = new Scene();
-                Scene scene2 = new Scene();
-                scene1.setText("test text");
-                scene2.setText("some text");
-                ButtonInfo button11 = new ButtonInfo();
-                button11.setName("Далее");
-                button11.setRow(0);
-                button11.setColumn(1);
-                button11.setType("Continue");
-                button11.setNextScene(scene2);
-                scene1.addButton(button11);
-                nextScene(scene1);
+//                Scene scene1 = new Scene();
+//                Scene scene2 = new Scene();
+//                scene1.setText("test text");
+//                scene2.setText("some text");
+//                ButtonInfo button11 = new ButtonInfo();
+//                button11.setName("Далее");
+//                button11.setRow(0);
+//                button11.setColumn(1);
+//                button11.setType("Continue");
+//                button11.setNextScene(scene2);
+//                scene1.addButton(button11);
+//                nextScene(scene1);
+                //DEAL WITH IT
 
             }
         });
         //showSaveMenu();
     }
+
+    public static Scene scene1 = new Scene() {
+        @Override
+        public void setUpScene(World world) {
+            //test changing, text for example
+            //if not works, change get methods with ifs maybe? idk
+            //override a bunch of this shit
+        }
+    };
 
     private void setButton (Button button, String text, int row, int column) {
         button.setText(text);
@@ -152,6 +162,7 @@ public class MainController implements Initializable{
         //world.addTime(5); //randomise, link to time/date label
         //scene.setPronouns(world.getMainCharacter()); //for male or female
         //maybe smth like (if !=female)
+        scene.setUpScene(world);
         addText(scene.getText());
         ArrayList<ButtonInfo> buttons = scene.getButtons();
         //add buttons

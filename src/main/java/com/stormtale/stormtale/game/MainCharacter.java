@@ -2,7 +2,7 @@ package com.stormtale.stormtale.game;
 
 import java.io.Serializable;
 
-public class MainCharacter extends CharacterTemplate implements Serializable {
+public class MainCharacter extends AbstractCharacter implements Serializable {
 
 
     //equipment slots?

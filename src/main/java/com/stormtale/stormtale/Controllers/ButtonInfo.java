@@ -1,6 +1,6 @@
 package com.stormtale.stormtale.Controllers;
 
-import com.stormtale.stormtale.game.NPC;
+import com.stormtale.stormtale.game.AbstractNPC;
 import com.stormtale.stormtale.game.inventory.Item;
 
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ public class ButtonInfo {
     private Integer column;
     private Item item;
     private Type type;
-    private ArrayList<NPC> enemies;
-    private NPC npc;
+    private ArrayList<AbstractNPC> enemies;
+    private AbstractNPC npc;
     private String newLocation;
     private String nextFile;
     private Scene nextScene;
@@ -78,19 +78,19 @@ public class ButtonInfo {
         return type;
     }
 
-    public ArrayList<NPC> getEnemies() {
+    public ArrayList<AbstractNPC> getEnemies() {
         return enemies;
     }
 
-    public void addEnemy(NPC enemy) {
+    public void addEnemy(AbstractNPC enemy) {
         enemies.add(enemy);
     }
 
-    public void setNpc(NPC npc) {
+    public void setNpc(AbstractNPC npc) {
         this.npc = npc;
     }
 
-    public NPC getNpc() {
+    public AbstractNPC getNpc() {
         return npc;
     }
 

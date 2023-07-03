@@ -1,11 +1,24 @@
 package com.stormtale.stormtale.game;
 
-public class NPC extends CharacterTemplate{
+import java.util.ArrayList;
 
-    Boolean firstConversation = false;
+public class NPC {
 
-    public void setFirstConversation(Boolean condition) {
-        firstConversation = condition;
-    }
+    public static AbstractNPC testNPC = new AbstractNPC(new String[]{"Кира", "test", "testt", "test", "test", "test"},
+            true,
+            16,
+            7,
+            "Мана",
+            4,
+            2,
+            1,
+            2,
+            3,
+            4) {
+        @Override
+        public Ability attack(MainCharacter mc, ArrayList<AbstractNPC> enemies) {
+            return null;
+        }
+    };
 
 }

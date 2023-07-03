@@ -1,22 +1,10 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.inventory.Inventory;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
-public abstract class CharacterTemplate {
+public abstract class AbstractCharacter {
     String[] name = new String[6];
     Boolean female;
     String characterClass;
@@ -33,12 +21,38 @@ public abstract class CharacterTemplate {
     Integer mind;
     Integer charisma;
 
-    ArrayList<Ability> abilities;
+    ArrayList<Ability> abilities = new ArrayList<>();
     Inventory inventory;
-    ArrayList<Condition> conditions;
+    ArrayList<AbstractCondition> conditions = new ArrayList<>();
     //equipment slots?
     String portraitUrl;
     String imageUrl;
+
+    public void rest () {
+        currentHealth = maxHealth;
+        currentResource = maxResource;
+        clearConditions();
+    }
+
+    public void addAbility (Ability ability) {
+        abilities.add(ability);
+    }
+
+    public void  removeAbility (Ability ability) {
+        abilities.remove(ability);
+    }
+
+    public void addCondition (AbstractCondition condition) {
+        conditions.add(condition);
+    }
+
+    public void removeCondition (AbstractCondition condition) {
+        conditions.remove(condition);
+    }
+
+    public void clearConditions () {
+        conditions.clear();
+    }
 
     public String[] getName() {
         return name;
@@ -216,6 +230,10 @@ public abstract class CharacterTemplate {
     public void subtractCharisma(Integer charisma) {
         this.charisma = this.charisma - charisma;
         if (this.charisma < 1) this.charisma = 1;
+    }
+
+    public ArrayList<AbstractCondition> getConditions() {
+        return conditions;
     }
 
     public String getPortraitUrl() {

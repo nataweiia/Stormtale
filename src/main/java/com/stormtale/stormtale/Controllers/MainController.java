@@ -1,7 +1,6 @@
 package com.stormtale.stormtale.Controllers;
 
-import com.stormtale.stormtale.game.MainCharacter;
-import com.stormtale.stormtale.game.NPC;
+import com.stormtale.stormtale.game.*;
 import com.stormtale.stormtale.game.inventory.Inventory;
 import com.stormtale.stormtale.game.inventory.Item;
 import com.stormtale.stormtale.World;
@@ -76,12 +75,23 @@ public class MainController implements Initializable{
                 World newWorld = new World();
                 world = newWorld;
                 MainCharacter mc = new MainCharacter();
+                String[] names = new String[6];
+                for (int i = 0; i < 6; i++) {
+                    names[i] = "Эфиселия";
+                }
+                mc.setName(names);
                 mc.setCharacterClass("Ученый");
                 mc.setFemale(true);
                 mc.setMaxHealth(15);
                 mc.setCurrentHealth(10);
                 mc.setCurrentResource(10);
                 mc.setMaxResource(15);
+                mc.addCondition(Condition.testCondition);
+//                NPC enemy = new NPC();
+//                Combat combat = new Combat(mc,enemy);
+//                System.out.println(mc.getCurrentHealth());
+//                combat.turn();
+                System.out.println(mc.getCurrentHealth());
                 world.setMainCharacter(mc);
                 world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
                 world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
@@ -97,7 +107,7 @@ public class MainController implements Initializable{
 //                button11.setType("Continue");
 //                button11.setNextScene(scene2);
 //                scene1.addButton(button11);
-//                nextScene(scene1);
+                nextScene(scene1);
                 //DEAL WITH IT
 
             }
@@ -105,9 +115,10 @@ public class MainController implements Initializable{
         //showSaveMenu();
     }
 
-    public static Scene scene1 = new Scene() {
+    public static Scene scene1 = new Scene() { //test, delete later
         @Override
         public void setUpScene(World world) {
+            scene1.setText("success");
             //test changing, text for example
             //if not works, change get methods with ifs maybe? idk
             //override a bunch of this shit
@@ -153,6 +164,13 @@ public class MainController implements Initializable{
 
     private void clearButtons () {
         ButtonGrid.getChildren().clear();
+    }
+
+    private void combatInstance (Combat combat) {
+        //hideMap()
+
+        //give rewards upon winning, get rewards from enemies
+
     }
 
     private void nextScene (Scene scene) {
@@ -209,7 +227,7 @@ public class MainController implements Initializable{
                             public void handle(ActionEvent actionEvent) {
                                 //map.setVisibility(false); or smth like that
                                 //maybe show portrait window?
-                                NPC dialoguePartisipant = buttonInfo.getNpc(); //dialogue interface?
+                                AbstractNPC dialoguePartisipant = buttonInfo.getNpc(); //dialogue interface?
                                 nextScene(buttonInfo.getNextScene());
                             }
                         });
@@ -228,16 +246,7 @@ public class MainController implements Initializable{
             } else {
                 setDisabledButton(button,buttonInfo.getName(),buttonInfo.getRow(),buttonInfo.getColumn());
             }
-        //Button button = scene.getButton(i); not button, smth with lists maybe?
-        //if (button.getType == "move") {      switch case maybe
-        //button.setOnAction      nextScene(button.getScene)
         }
-        //if (buttonType(i) == "item" {
-        //button.SetOnAction     mc.addItem(scene.getItem(i));    add Item to inventory
-        //}
-        //if (buttonType(i) == "npc" {
-        //button.SetOnAction     conversation(scene.getNPC(i));    preserve scene?
-        //}
     }
 
     private void displayInventory (Inventory inventory) { //WIP, rework, save in worldstate MB?
@@ -813,7 +822,7 @@ public class MainController implements Initializable{
         });
     }
 
-    private void showProfile(MainCharacter character) {
+    private void showProfile(AbstractCharacter character) {
         Pane profilePane = new Pane();
         profilePane.setId("ProfileField");
         profilePane.setPrefSize(255,140);
@@ -873,15 +882,20 @@ public class MainController implements Initializable{
         portraitContainer.getChildren().add(frame);
         frame.setTranslateX(-5);
         portraitContainer.relocate(10,20);
-
         profilePane.getChildren().add(portraitContainer);
+
+        Label name = new Label(character.getName()[0]);
+        name.setFont(new Font(18));
+        name.setTextFill(Color.rgb(48, 97, 74));
+        name.relocate(125,5);
+        profilePane.getChildren().add(name);
 
         ProgressBar healthBar = new ProgressBar();
         healthBar.setId("HealthBar");
         double health = character.getCurrentHealth();
         healthBar.setProgress(health / character.getMaxHealth());
         healthBar.setPrefSize(120,30);
-        healthBar.relocate(120,25);
+        healthBar.relocate(120,35);
         profilePane.getChildren().add(healthBar);
 
         ProgressBar resourceBar = new ProgressBar();
@@ -889,31 +903,27 @@ public class MainController implements Initializable{
         double progress = character.getCurrentResource();
         resourceBar.setProgress(progress / character.getMaxResource());
         resourceBar.setPrefSize(120,30);
-        resourceBar.relocate(120,65);
+        resourceBar.relocate(120,70);
         profilePane.getChildren().add(resourceBar);
 
         HBox conditions = new HBox();
         conditions.setPrefSize(120,30);
         conditions.setSpacing(5);
-        conditions.relocate(120,100);
-        //add conditions here
-        Image testImage = new Image(this.getClass().getResourceAsStream("/com/stormtale/stormtale/images/rooster.png"));
-        Rectangle test = new Rectangle(25,25);
-        test.setFill(new ImagePattern(testImage));
-        Rectangle test2 = new Rectangle(25,25);
-        test2.setFill(new ImagePattern(testImage));
-        conditions.getChildren().add(test);
-        conditions.getChildren().add(test2);
+        conditions.relocate(120,105);
+        if (world.getMainCharacter().getConditions() != null) {
+            for (AbstractCondition condition: world.getMainCharacter().getConditions()
+                 ) {
+                Image icon = new Image(this.getClass().getResourceAsStream(condition.getIconURL()));
+                Rectangle iconRectangle = new  Rectangle(25,25);
+                iconRectangle.setFill(new ImagePattern(icon));
+                conditions.getChildren().add(iconRectangle);
+                //add description
+            }
+        }
         profilePane.getChildren().add(conditions);
 
-
         ProfileBox.getChildren().add(profilePane);
-        //Pane contains whole thing
-        //picture in frame, can be clicked to fullsize
-        //2 progress bars for health and resourse, bind progress to current? test later
-        //space for conditions, bind here also?
-        //name!!! maybe clickable to char window?
-        //set sizes, define how to choose space, mc always first, overrride maybe? or just show mc first, idk
+
     }
 
     private void closeMenu () {

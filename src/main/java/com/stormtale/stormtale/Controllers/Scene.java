@@ -1,15 +1,6 @@
 package com.stormtale.stormtale.Controllers;
 
 import com.stormtale.stormtale.World;
-import com.stormtale.stormtale.game.NPC;
-import com.stormtale.stormtale.game.inventory.Item;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
 

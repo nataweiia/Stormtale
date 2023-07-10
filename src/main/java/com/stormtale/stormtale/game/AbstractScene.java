@@ -1,10 +1,10 @@
-package com.stormtale.stormtale.Controllers;
+package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.World;
 
 import java.util.ArrayList;
 
-public abstract class Scene {
+public abstract class AbstractScene {
     private Integer ID;
     private String text;
     private ArrayList<ButtonInfo> buttons = new ArrayList<>();

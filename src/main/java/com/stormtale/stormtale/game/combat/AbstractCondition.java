@@ -1,4 +1,6 @@
-package com.stormtale.stormtale.game;
+package com.stormtale.stormtale.game.combat;
+
+import com.stormtale.stormtale.game.AbstractCharacter;
 
 public abstract class AbstractCondition {
     String name;

@@ -1,8 +1,10 @@
 package com.stormtale.stormtale;
 
+import com.stormtale.stormtale.game.Companion;
 import com.stormtale.stormtale.game.MainCharacter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class World implements Serializable {
 
@@ -11,6 +13,8 @@ public class World implements Serializable {
     Time currentTime;
 
     MainCharacter mainCharacter;
+
+    ArrayList<Companion> companions = new ArrayList<Companion>();
 
     //locations here
 
@@ -52,5 +56,21 @@ public class World implements Serializable {
 
     public MainCharacter getMainCharacter() {
         return mainCharacter;
+    }
+
+    public ArrayList<Companion> getCompanions() {
+        return companions;
+    }
+
+    public void setCompanions(ArrayList<Companion> companions) {
+        this.companions = companions;
+    }
+
+    public void addCompanion(Companion companion) {
+        companions.add(companion);
+    }
+
+    public void removeCompanion(Companion companion) {
+        companions.remove(companion);
     }
 }

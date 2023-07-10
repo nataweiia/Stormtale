@@ -1,6 +1,12 @@
 package com.stormtale.stormtale.game;
 
+import com.stormtale.stormtale.game.combat.AbstractAbility;
+import com.stormtale.stormtale.game.combat.AbstractCondition;
 import com.stormtale.stormtale.game.inventory.Inventory;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.ArrayList;
 
@@ -11,9 +17,11 @@ public abstract class AbstractCharacter {
     Integer level;
     Integer maxHealth;
     Integer currentHealth;
+    DoubleProperty healthPercentage = new SimpleDoubleProperty();
     String resourceType;
     Integer maxResource;
     Integer currentResource;
+    DoubleProperty resourcePercentage = new SimpleDoubleProperty();
     //armor? resistances?
 
     Integer strength;
@@ -21,9 +29,10 @@ public abstract class AbstractCharacter {
     Integer mind;
     Integer charisma;
 
-    ArrayList<Ability> abilities = new ArrayList<>();
+    ArrayList<AbstractAbility> abilities = new ArrayList<>();
     Inventory inventory;
     ArrayList<AbstractCondition> conditions = new ArrayList<>();
+    IntegerProperty conditionCount = new SimpleIntegerProperty();
     //equipment slots?
     String portraitUrl;
     String imageUrl;
@@ -34,24 +43,27 @@ public abstract class AbstractCharacter {
         clearConditions();
     }
 
-    public void addAbility (Ability ability) {
+    public void addAbility (AbstractAbility ability) {
         abilities.add(ability);
     }
 
-    public void  removeAbility (Ability ability) {
+    public void  removeAbility (AbstractAbility ability) {
         abilities.remove(ability);
     }
 
     public void addCondition (AbstractCondition condition) {
         conditions.add(condition);
+        conditionCount.setValue(getConditionCount() + 1);
     }
 
     public void removeCondition (AbstractCondition condition) {
         conditions.remove(condition);
+        conditionCount.setValue(getConditionCount() - 1);
     }
 
     public void clearConditions () {
         conditions.clear();
+        conditionCount.setValue(0);
     }
 
     public String[] getName() {
@@ -113,6 +125,7 @@ public abstract class AbstractCharacter {
 
     public void setCurrentHealth(Integer health) {
         currentHealth = health;
+        healthPercentage.setValue((double)currentHealth / maxHealth);
     }
 
     public Integer getCurrentHealth() {
@@ -122,12 +135,26 @@ public abstract class AbstractCharacter {
     public void addHealth (Integer health) {
         currentHealth = currentHealth + health;
         if (currentHealth > maxHealth) currentHealth = maxHealth;
+        healthPercentage.setValue((double)currentHealth / maxHealth);
     }
 
     public void subtractHealth(Integer health) {
         currentHealth = currentHealth - health;
         if (currentHealth < 0) currentHealth = 0;
+        healthPercentage.setValue((double)currentHealth / maxHealth);
         //death effects? maybe not here?
+    }
+
+    public double getHealthPercentage() {
+        return healthPercentage.get();
+    }
+
+    public void setHealthPercentage(double healthPercentage) {
+        this.healthPercentage.set(healthPercentage);
+    }
+
+    public DoubleProperty healthPercentageProperty() {
+        return healthPercentage;
     }
 
     public void setResourceType(String resourceType) {
@@ -148,6 +175,7 @@ public abstract class AbstractCharacter {
 
     public void setCurrentResource(Integer resource) {
         currentResource = resource;
+        resourcePercentage.setValue((double)currentResource / maxResource);
     }
 
     public Integer getCurrentResource() {
@@ -157,11 +185,25 @@ public abstract class AbstractCharacter {
     public void addResource(Integer resource) {
         currentResource = currentResource + resource;
         if (currentResource > maxResource) currentResource = maxResource;
+        resourcePercentage.setValue((double)currentResource / maxResource);
     }
 
     public void subtractResource(Integer resource) {
         currentResource = currentResource - resource;
         if (currentResource < 0) currentResource = 0;
+        resourcePercentage.setValue((double)currentResource / maxResource);
+    }
+
+    public double getResourcePercentage() {
+        return resourcePercentage.get();
+    }
+
+    public void setResourcePercentage(double resourcePercentage) {
+        this.resourcePercentage.set(resourcePercentage);
+    }
+
+    public DoubleProperty resourcePercentageProperty() {
+        return resourcePercentage;
     }
 
     public void setStrength(Integer strength) {
@@ -232,8 +274,20 @@ public abstract class AbstractCharacter {
         if (this.charisma < 1) this.charisma = 1;
     }
 
+    public ArrayList<AbstractAbility> getAbilities() {
+        return abilities;
+    }
+
     public ArrayList<AbstractCondition> getConditions() {
         return conditions;
+    }
+
+    public int getConditionCount() {
+        return conditionCount.get();
+    }
+
+    public IntegerProperty conditionCountProperty() {
+        return conditionCount;
     }
 
     public String getPortraitUrl() {

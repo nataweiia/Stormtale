@@ -1,6 +1,5 @@
-package com.stormtale.stormtale.Controllers;
+package com.stormtale.stormtale.game;
 
-import com.stormtale.stormtale.game.AbstractNPC;
 import com.stormtale.stormtale.game.inventory.Item;
 
 import java.util.ArrayList;
@@ -17,10 +16,11 @@ public class ButtonInfo {
     private Item item;
     private Type type;
     private ArrayList<AbstractNPC> enemies;
+    private String startCombatText;
     private AbstractNPC npc;
     private String newLocation;
     private String nextFile;
-    private Scene nextScene;
+    private AbstractScene nextScene;
 
     public void setName(String name) {
         this.name = name;
@@ -74,8 +74,8 @@ public class ButtonInfo {
         this.type = Type.valueOf(type);
     }
 
-    public Type getType() {
-        return type;
+    public String getType() {
+        return type.name();
     }
 
     public ArrayList<AbstractNPC> getEnemies() {
@@ -84,6 +84,10 @@ public class ButtonInfo {
 
     public void addEnemy(AbstractNPC enemy) {
         enemies.add(enemy);
+    }
+
+    public String getStartCombatText() {
+        return startCombatText;
     }
 
     public void setNpc(AbstractNPC npc) {
@@ -110,11 +114,11 @@ public class ButtonInfo {
         return nextFile;
     }
 
-    public void setNextScene(Scene nextScene) {
+    public void setNextScene(AbstractScene nextScene) {
         this.nextScene = nextScene;
     }
 
-    public Scene getNextScene() {
+    public AbstractScene getNextScene() {
         return nextScene;
     }
 }

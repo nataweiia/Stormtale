@@ -88,8 +88,12 @@
 -fx-accent: red;
 }
 
-#ResourceBar {
--fx-accent: green;
+#ManaBar {
+-fx-accent: blue;
+}
+
+#StaminaBar {
+-fx-accent: yellow;
 }
 
 .tooltip {

@@ -10,6 +10,7 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
     public MainCharacter () {
         name[0] = "Неизвестно";
         level = 1;
+        conditionCount.setValue(0);
     }
     public void setCharacterClass(String characterClass) {
         this.characterClass = characterClass;

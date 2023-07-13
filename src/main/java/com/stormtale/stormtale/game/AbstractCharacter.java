@@ -278,12 +278,20 @@ public abstract class AbstractCharacter {
         return abilities;
     }
 
+    public void setAbilities(ArrayList<AbstractAbility> abilities) {
+        this.abilities = abilities;
+    }
+
     public ArrayList<AbstractCondition> getConditions() {
         return conditions;
     }
 
     public int getConditionCount() {
         return conditionCount.get();
+    }
+
+    public void setConditionCount(int conditionCount) {
+        this.conditionCount.set(conditionCount);
     }
 
     public IntegerProperty conditionCountProperty() {

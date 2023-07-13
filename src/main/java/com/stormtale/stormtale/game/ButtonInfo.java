@@ -1,6 +1,7 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.inventory.Item;
+import com.stormtale.stormtale.game.npc.AbstractNPC;
 
 import java.util.ArrayList;
 

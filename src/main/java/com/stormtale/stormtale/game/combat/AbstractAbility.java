@@ -1,7 +1,6 @@
 package com.stormtale.stormtale.game.combat;
 
 import com.stormtale.stormtale.game.AbstractCharacter;
-import com.stormtale.stormtale.game.AbstractNPC;
 
 import java.util.ArrayList;
 
@@ -11,16 +10,21 @@ public abstract class AbstractAbility {
     private Integer cost;
     private Integer cooldown;
 
+    private Boolean chooseTarget;
+
     private Integer currentCooldown = 0;
 
-    public AbstractAbility (String name, String description, Integer cost, Integer cooldown) {
+    public AbstractAbility (String name, String description, Integer cost, Integer cooldown, Boolean chooseTarget) {
         this.name = name;
         this.description = description;
         this.cost = cost;
         this.cooldown = cooldown;
+        this.chooseTarget = chooseTarget;
     }
 
     public abstract String use (AbstractCharacter user, ArrayList<AbstractCharacter> targets);
+
+    public abstract String use (AbstractCharacter user, AbstractCharacter target);
 
     public void setName(String name) {
         this.name = name;
@@ -52,5 +56,9 @@ public abstract class AbstractAbility {
 
     public Integer getCooldown() {
         return cooldown;
+    }
+
+    public Boolean getChooseTarget() {
+        return chooseTarget;
     }
 }

@@ -16,4 +16,6 @@ module com.stormtale.stormtale {
     opens com.stormtale.stormtale.game to javafx.fxml;
     exports com.stormtale.stormtale.game.combat;
     opens com.stormtale.stormtale.game.combat to javafx.fxml;
+    exports com.stormtale.stormtale.game.npc;
+    opens com.stormtale.stormtale.game.npc to javafx.fxml;
 }

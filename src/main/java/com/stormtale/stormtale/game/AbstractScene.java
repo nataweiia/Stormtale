@@ -5,7 +5,6 @@ import com.stormtale.stormtale.World;
 import java.util.ArrayList;
 
 public abstract class AbstractScene {
-    private Integer ID;
     private String text;
     private ArrayList<ButtonInfo> buttons = new ArrayList<>();
     private String location;
@@ -13,15 +12,19 @@ public abstract class AbstractScene {
     public void Scene () { //make full constructors
     }
 
+    public AbstractScene() {
+    }
+
+    public AbstractScene(String text, String location) {
+        this.text = text;
+        this.location = location;
+    }
+
+    public AbstractScene(String location) {
+        this.location = location;
+    }
+
     public abstract void setUpScene (World world);
-
-    public void setID(Integer ID) {
-        this.ID = ID;
-    }
-
-    public Integer getID() {
-        return ID;
-    }
 
     public void setText(String text) {
         this.text = text;

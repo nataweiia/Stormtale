@@ -1,6 +1,7 @@
 package com.stormtale.stormtale.game.combat;
 
 import com.stormtale.stormtale.game.*;
+import com.stormtale.stormtale.game.npc.AbstractNPC;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +36,6 @@ public class Combat {
                 }
             }
         }
-        System.out.println("point 1");
         for (AbstractNPC enemy: enemies
              ) {
             if (!enemy.getConditions().isEmpty()) {
@@ -45,13 +45,12 @@ public class Combat {
         if (companions != null) {
             for (AbstractNPC companion: companions
             ) {
-                text = text + companion.action(companions,enemies,mc,true);
+                text = text + companion.action(companion,companions,enemies,mc,true);
             }
         }
-        System.out.println("point 2");
         for (AbstractNPC enemy: enemies
              ) {
-            text = text + enemy.action(enemies,companions,mc,false);
+            text = text + enemy.action(enemy, enemies,companions,mc,false);
         }
         if (companions != null) {
             for (AbstractNPC companion: companions
@@ -59,7 +58,6 @@ public class Combat {
                 if (companion.getCurrentHealth() == 0) companions.remove(companion);
             }
         }
-        System.out.println("point 3");
         Iterator<AbstractNPC> iterator = enemies.iterator();
         while (iterator.hasNext()){
             AbstractNPC enemy = iterator.next();

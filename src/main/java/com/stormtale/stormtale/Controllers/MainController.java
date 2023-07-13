@@ -5,12 +5,16 @@ import com.stormtale.stormtale.game.combat.*;
 import com.stormtale.stormtale.game.inventory.Inventory;
 import com.stormtale.stormtale.game.inventory.Item;
 import com.stormtale.stormtale.World;
+import com.stormtale.stormtale.game.npc.AbstractNPC;
+import com.stormtale.stormtale.game.npc.NPC;
+import com.stormtale.stormtale.game.npc.enemies.Yuka;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +25,7 @@ import javafx.fxml.Initializable;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javafx.scene.paint.Color;
@@ -54,12 +59,39 @@ public class MainController implements Initializable{
     @FXML
     VBox EnemyBox;
 
+    @FXML
+    Button SaveLoadButton;
+
+    @FXML
+    Button ShowMenuButton;
+
     World world;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //create with textflow?
+        SaveLoadButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                hideButtons();
+                Button button = new Button();
+                setButton(button,"test",0,0);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        ButtonGrid.getChildren().remove(button);
+                    }
+                });
+            }
+        });
+        ShowMenuButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                deleteVisibleButtons();
+                showButtons();
+            }
+        });
         addText("Вступительный текст о том как офигенна и восхитительна наша игра.\n");
         addText("WelcomeText\n\n");
         addText("WelcomeText");
@@ -99,7 +131,10 @@ public class MainController implements Initializable{
 //                showProfile(mc, ProfileBox);
 //                nextScene(scene1);
                 ArrayList<AbstractNPC> enemy = new ArrayList<>();
-                enemy.add(NPC.testNPC);
+                Yuka yuka1 = new Yuka();
+                Yuka yuka2 = new Yuka();
+                enemy.add(yuka1);
+                enemy.add(yuka2);
                 Combat combat = new Combat(world.getMainCharacter(),world.getCompanions(),enemy);
                 combat.setNextScene(scene1);
                 showProfile(combat.getMc(), ProfileBox);
@@ -114,11 +149,8 @@ public class MainController implements Initializable{
                     showProfile(enemy1,EnemyBox);
                 }
                 startCombat(combat, "Бой успешно начат!");
-                //DEAL WITH IT
-
             }
         });
-        //showSaveMenu();
     }
 
     public static AbstractScene scene1 = new AbstractScene() { //test, delete later
@@ -185,18 +217,37 @@ public class MainController implements Initializable{
         });
     }
 
+    private void endCombat(Combat combat) {
+        addText("Все враги повержены!");
+        //give exp and loot
+        //add text about it
+        ProfileBox.getChildren().clear();
+        EnemyBox.getChildren().clear();
+        Button button = new Button();
+        setButton(button,"Далее",0,0);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                nextScene(combat.getNextScene());
+            }
+        });
+    }
+
     private void nextTurn (Combat combat) {
         addText(combat.turn());
-        if (combat.getEnemies().isEmpty()) {
-            addText("Все враги повержены!");
+        if (combat.getMc().getCurrentHealth() == 0) {
+            addText("Ваш персонаж повержен!");
             Button button = new Button();
             setButton(button,"Далее",0,0);
             button.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    nextScene(combat.getNextScene());
+                    showSaveMenu();
                 }
             });
+        }
+        if (combat.getEnemies().isEmpty()) {
+            endCombat(combat);
         }
         else {
             setUpAbilities(combat);
@@ -205,7 +256,7 @@ public class MainController implements Initializable{
             items.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    clearButtons();
+                    hideButtons();
                     setUpItems(combat);
                 }
             });
@@ -222,12 +273,17 @@ public class MainController implements Initializable{
             button.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    clearMainText();
-                    clearButtons();
                     ArrayList<AbstractCharacter> targets = new ArrayList<>();
                     targets.addAll(combat.getEnemies());
-                    addText(ability.use(combat.getMc(), targets));
-                    nextTurn(combat);
+                    if (ability.getChooseTarget() && combat.getEnemies().size() > 1){
+                        hideButtons();
+                        chooseTarget(combat, ability);
+                    } else {
+                        clearMainText();
+                        clearButtons();
+                        addText(ability.use(combat.getMc(), targets));
+                        nextTurn(combat);
+                    }
                 }
             });
             row++;
@@ -236,6 +292,34 @@ public class MainController implements Initializable{
                 row = 0;
             }
         }
+    }
+
+    private void chooseTarget(Combat combat, AbstractAbility ability) {
+        int column = 0;
+        for (AbstractNPC enemy: combat.getEnemies()
+             ) {
+            Button button = new Button();
+            setButton(button, enemy.getName()[0],0,column);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    clearMainText();
+                    clearButtons();
+                    addText(ability.use(combat.getMc(), enemy));
+                    nextTurn(combat);
+                }
+            });
+            column++;
+        }
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                deleteVisibleButtons();
+                showButtons();
+            }
+        });
     }
 
     private void setUpItems(Combat combat) {
@@ -248,23 +332,26 @@ public class MainController implements Initializable{
         back.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                clearButtons();
-                setUpAbilities(combat);
+                deleteVisibleButtons();
+                showButtons();
             }
         });
     }
 
     private void nextScene (AbstractScene scene) {
+        //world.addTime(5);
+        // randomise, link to time/date label
+        //all changes upon changing scene either here or in buttons
+        scene.setUpScene(world);
+        displayScene(scene.getText(),scene.getButtons(),scene.getLocation());
+    }
+
+    private void displayScene(String text, ArrayList<ButtonInfo> buttons, String currentLocation) {
         clearMainText();
         clearButtons();
-        world.setCurrentLocation(scene.getLocation()); //add map change here
-        //world.addTime(5); //randomise, link to time/date label
-        //scene.setPronouns(world.getMainCharacter()); //for male or female
-        //maybe smth like (if !=female)
-        scene.setUpScene(world);
-        addText(scene.getText());
-        ArrayList<ButtonInfo> buttons = scene.getButtons();
-        //add buttons
+        world.setCurrentLocation(currentLocation); //add map change here
+        //show profiles maybe? think about it
+        addText(text);
         for (Integer i = 0; i < buttons.size(); i++) {
             Button button = new Button();
             ButtonInfo buttonInfo = buttons.get(i);
@@ -310,8 +397,6 @@ public class MainController implements Initializable{
                                 startCombat(combat, buttonInfo.getStartCombatText());
                             }
                         });
-                        //start combat, remember scene
-                        //write in combat optional post-combat scene, if null return to remembered scene
                         break;
                     case "Continue":
                         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -1047,6 +1132,28 @@ public class MainController implements Initializable{
             n--;
         }
         showMainText();
+    }
+
+    private void hideButtons() {
+        for (int i = 0; i < ButtonGrid.getChildren().size(); i++) {
+            ButtonGrid.getChildren().get(i).setVisible(false);
+            ButtonGrid.getChildren().get(i).setManaged(false);
+        }
+    }
+
+    private void showButtons() {
+        for (int i = 0; i <  ButtonGrid.getChildren().size(); i++) {
+            ButtonGrid.getChildren().get(i).setVisible(true);
+            ButtonGrid.getChildren().get(i).setManaged(true);
+        }
+    }
+
+    private void deleteVisibleButtons() {
+        Iterator<Node> iterator = ButtonGrid.getChildren().iterator();
+        while (iterator.hasNext()){
+            Node node = iterator.next();
+            if (node.isVisible()) iterator.remove();
+        }
     }
 
     private void showMainText () {

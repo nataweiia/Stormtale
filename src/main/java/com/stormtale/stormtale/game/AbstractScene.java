@@ -1,13 +1,14 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.World;
+import com.stormtale.stormtale.game.combat.AbstractAbility;
 
 import java.util.ArrayList;
 
 public abstract class AbstractScene {
     private String text;
     private ArrayList<ButtonInfo> buttons = new ArrayList<>();
-    private String location;
+    private AbstractLocation location;
 
     public void Scene () { //make full constructors
     }
@@ -15,16 +16,18 @@ public abstract class AbstractScene {
     public AbstractScene() {
     }
 
-    public AbstractScene(String text, String location) {
+    public AbstractScene(String text, AbstractLocation location) {
         this.text = text;
         this.location = location;
     }
 
-    public AbstractScene(String location) {
+    public AbstractScene(AbstractLocation location) {
         this.location = location;
     }
 
     public abstract void setUpScene (World world);
+
+    public abstract void changeFlag(World world);
 
     public void setText(String text) {
         this.text = text;
@@ -42,11 +45,11 @@ public abstract class AbstractScene {
         buttons.add(button);
     }
 
-    public void setLocation(String location) {
+    public void setLocation(AbstractLocation location) {
         this.location = location;
     }
 
-    public String getLocation() {
+    public AbstractLocation getLocation() {
         return location;
     }
 }

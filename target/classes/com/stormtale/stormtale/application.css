@@ -48,6 +48,32 @@
 -fx-border-radius: 4px;
 }
 
+#SaveLoadButton {
+-fx-graphic: url("images/save.png");
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+}
+
+#ShowMenuButton {
+-fx-graphic: url("images/menu.png");
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+}
+
+#MapPane {
+-fx-background-color: rgba(255,255,255,1);
+-fx-border-radius: 4px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 3px;
+}
+
+#MapTile {
+-fx-border-radius: 3px;
+}
+
 #Menu {
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;

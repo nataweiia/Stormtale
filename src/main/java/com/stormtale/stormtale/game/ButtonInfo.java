@@ -1,6 +1,6 @@
 package com.stormtale.stormtale.game;
 
-import com.stormtale.stormtale.game.inventory.Item;
+import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
 import java.util.ArrayList;
@@ -14,13 +14,14 @@ public class ButtonInfo {
     private Boolean availability = true;
     private Integer row;
     private Integer column;
-    private Item item;
+    private AbstractItem item;
     private Type type;
     private ArrayList<AbstractNPC> enemies;
     private String startCombatText;
     private AbstractNPC npc;
-    private String newLocation;
+    private AbstractLocation newLocation;
     private String nextFile;
+    private Boolean flag;
     private AbstractScene nextScene;
 
     public void setName(String name) {
@@ -63,11 +64,11 @@ public class ButtonInfo {
         return column;
     }
 
-    public void setItem(Item item) {
+    public void setItem(AbstractItem item) {
         this.item = item;
     }
 
-    public Item getItem() {
+    public AbstractItem getItem() {
         return item;
     }
 
@@ -99,11 +100,11 @@ public class ButtonInfo {
         return npc;
     }
 
-    public void setNewLocation(String newLocation) {
+    public void setNewLocation(AbstractLocation newLocation) {
         this.newLocation = newLocation;
     }
 
-    public String getNewLocation() {
+    public AbstractLocation getNewLocation() {
         return newLocation;
     }
 
@@ -113,6 +114,14 @@ public class ButtonInfo {
 
     public String getNextFile() {
         return nextFile;
+    }
+
+    public Boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(Boolean flag) {
+        this.flag = flag;
     }
 
     public void setNextScene(AbstractScene nextScene) {

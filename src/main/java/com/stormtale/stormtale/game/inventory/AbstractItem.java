@@ -1,13 +1,18 @@
 package com.stormtale.stormtale.game.inventory;
 
-public class Item {
+import com.stormtale.stormtale.game.MainCharacter;
+import com.stormtale.stormtale.game.npc.AbstractNPC;
+
+import java.util.ArrayList;
+
+public abstract class AbstractItem {
     String name;
     String type;
     String description;
     String rarity;
     Integer value;
     Integer ID;
-    public Item (String n, String t, String d, String r) {
+    public AbstractItem(String n, String t, String d, String r) {
         name = n;
         type = t;
         description = d;
@@ -15,13 +20,17 @@ public class Item {
         value = 0;
     }
 
-    public Item (String n, String t, String d, String r, Integer v) {
+    public AbstractItem(String n, String t, String d, String r, Integer v) {
         name = n;
         type = t;
         description = d;
         rarity = r;
         value = v;
     }
+
+    public AbstractItem() {}
+
+    public abstract String use(MainCharacter mc, ArrayList<AbstractNPC> companions, ArrayList<AbstractNPC> enemies);
 
     public String getName () {
         return name;

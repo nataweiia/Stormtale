@@ -2,11 +2,12 @@ package com.stormtale.stormtale.Controllers;
 
 import com.stormtale.stormtale.game.*;
 import com.stormtale.stormtale.game.combat.*;
-import com.stormtale.stormtale.game.inventory.Inventory;
-import com.stormtale.stormtale.game.inventory.Item;
+import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.World;
+import com.stormtale.stormtale.game.inventory.Consumable;
+import com.stormtale.stormtale.game.inventory.Equipment;
+import com.stormtale.stormtale.game.inventory.Weapon;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
-import com.stormtale.stormtale.game.npc.NPC;
 import com.stormtale.stormtale.game.npc.enemies.Yuka;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +31,7 @@ import java.util.ResourceBundle;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -54,10 +56,10 @@ public class MainController implements Initializable{
     Pane MainPane;
 
     @FXML
-    VBox ProfileBox;
+    VBox LeftBox;
 
     @FXML
-    VBox EnemyBox;
+    VBox RightBox;
 
     @FXML
     Button SaveLoadButton;
@@ -70,26 +72,16 @@ public class MainController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //create with textflow?
+
         SaveLoadButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                hideButtons();
-                Button button = new Button();
-                setButton(button,"test",0,0);
-                button.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        ButtonGrid.getChildren().remove(button);
-                    }
-                });
+                showSaveMenu();
             }
         });
         ShowMenuButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                deleteVisibleButtons();
-                showButtons();
             }
         });
         addText("Вступительный текст о том как офигенна и восхитительна наша игра.\n");
@@ -128,27 +120,8 @@ public class MainController implements Initializable{
                 world.setMainCharacter(mc);
                 world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
                 world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
-//                showProfile(mc, ProfileBox);
-//                nextScene(scene1);
-                ArrayList<AbstractNPC> enemy = new ArrayList<>();
-                Yuka yuka1 = new Yuka();
-                Yuka yuka2 = new Yuka();
-                enemy.add(yuka1);
-                enemy.add(yuka2);
-                Combat combat = new Combat(world.getMainCharacter(),world.getCompanions(),enemy);
-                combat.setNextScene(scene1);
-                showProfile(combat.getMc(), ProfileBox);
-                if (combat.getCompanions() != null) {
-                    for (AbstractNPC companion: combat.getCompanions()
-                    ) {
-                        showProfile(companion,ProfileBox);
-                    }
-                }
-                for (AbstractNPC enemy1: combat.getEnemies()
-                ) {
-                    showProfile(enemy1,EnemyBox);
-                }
-                startCombat(combat, "Бой успешно начат!");
+                world.setCurrentLocation(Location.testLocation);
+                drawMap();
             }
         });
     }
@@ -157,6 +130,11 @@ public class MainController implements Initializable{
         @Override
         public void setUpScene(World world) {
             scene1.setText("success");
+        }
+
+        @Override
+        public void changeFlag(World world) {
+
         }
     };
 
@@ -219,16 +197,22 @@ public class MainController implements Initializable{
 
     private void endCombat(Combat combat) {
         addText("Все враги повержены!");
-        //give exp and loot
-        //add text about it
-        ProfileBox.getChildren().clear();
-        EnemyBox.getChildren().clear();
+        world.getMainCharacter().addExp(combat.getTotalExpReward());
+        addText("\n\nВы получаете " + combat.getTotalExpReward() + " опыта!");
+        for (AbstractItem item: combat.getLoot()
+             ) {
+            addText("\nВы получаете " + item.getName() + ".");
+            world.getMainCharacter().addItem(item);
+            //possible place for out of capacity dialogue
+        }
+        LeftBox.getChildren().clear();
+        RightBox.getChildren().clear();
         Button button = new Button();
         setButton(button,"Далее",0,0);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                nextScene(combat.getNextScene());
+                checkForLevelUp(combat.getNextScene());
             }
         });
     }
@@ -323,10 +307,28 @@ public class MainController implements Initializable{
     }
 
     private void setUpItems(Combat combat) {
-        //foreach item in inventory
-        //if item usable in combat
-        //clean text, clean buttons
-        //onAction -> use item, next turn
+        int row = 0;
+        int column = 0;
+        for (AbstractItem item: combat.getMc().getInventory()
+             ) {
+            if (item.getType() == "Боевой") {
+                Button button = new Button();
+                setButtonHover(button, item.getName(), item.getDescription(), row, column);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        clearMainText();
+                        clearButtons();
+                        addText(item.use(combat.getMc(),combat.getCompanions(),combat.getEnemies()));
+                    }
+                });
+                row++;
+                if (row == 5) {
+                    column++;
+                    row = 0;
+                }
+            }
+        }
         Button back = new Button();
         setButton(back,"Назад",2,4);
         back.setOnAction(new EventHandler<ActionEvent>() {
@@ -339,19 +341,20 @@ public class MainController implements Initializable{
     }
 
     private void nextScene (AbstractScene scene) {
-        //world.addTime(5);
-        // randomise, link to time/date label
-        //all changes upon changing scene either here or in buttons
         scene.setUpScene(world);
-        displayScene(scene.getText(),scene.getButtons(),scene.getLocation());
+        world.setCurrentScene(scene);
+        world.setCurrentButtons(scene.getButtons());
+        world.setCurrentLocation(scene.getLocation());
+        displayCurrentScene();
     }
 
-    private void displayScene(String text, ArrayList<ButtonInfo> buttons, String currentLocation) {
+    private void displayCurrentScene() {
         clearMainText();
         clearButtons();
-        world.setCurrentLocation(currentLocation); //add map change here
+        ArrayList<ButtonInfo> buttons = world.getCurrentButtons();
+        //add map change here
         //show profiles maybe? think about it
-        addText(text);
+        addText(world.getCurrentSceneText());
         for (Integer i = 0; i < buttons.size(); i++) {
             Button button = new Button();
             ButtonInfo buttonInfo = buttons.get(i);
@@ -367,11 +370,16 @@ public class MainController implements Initializable{
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                addText("\n+1 " + buttonInfo.getItem().getName() + ".");
+                                String text = "\nВы получаете " + buttonInfo.getItem().getName() + ".";
+                                addText(text);
+                                world.setCurrentSceneText(world.getCurrentSceneText() + text);
+                                world.getMainCharacter().addItem(buttonInfo.getItem());
+                                if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
                                 //do smth with saves here, idk
                                 //maybe keep all scenes in world?
                                 //check with world if already taken or smth
                                 //world.getMainCharacter().addItem(buttonInfo.getItem());
+                                buttons.remove(buttonInfo);
                                 ButtonGrid.getChildren().remove(button);
                             }
                         });
@@ -381,18 +389,19 @@ public class MainController implements Initializable{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 //hideMap
+                                if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
                                 Combat combat = new Combat(world.getMainCharacter(),world.getCompanions(),buttonInfo.getEnemies());
                                 combat.setNextScene(buttonInfo.getNextScene());
-                                showProfile(combat.getMc(), ProfileBox);
+                                showProfile(combat.getMc(), LeftBox);
                                 if (combat.getCompanions() != null) {
                                     for (AbstractNPC companion: combat.getCompanions()
                                     ) {
-                                        showProfile(companion,ProfileBox);
+                                        showProfile(companion, LeftBox);
                                     }
                                 }
                                 for (AbstractNPC enemy: combat.getEnemies()
                                 ) {
-                                    showProfile(enemy,EnemyBox);
+                                    showProfile(enemy, RightBox);
                                 }
                                 startCombat(combat, buttonInfo.getStartCombatText());
                             }
@@ -402,18 +411,7 @@ public class MainController implements Initializable{
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                //do smth with scenes, search through id? open file if nextFile not empty?
-                                nextScene(buttonInfo.getNextScene());
-                            }
-                        });
-                        break;
-                    case "Dialogue":
-                        button.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                //map.setVisibility(false); or smth like that
-                                //maybe show portrait window?
-                                AbstractNPC dialoguePartisipant = buttonInfo.getNpc(); //dialogue interface?
+                                if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
                                 nextScene(buttonInfo.getNextScene());
                             }
                         });
@@ -422,7 +420,7 @@ public class MainController implements Initializable{
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                String location = buttonInfo.getNewLocation();
+                                //add time
                                 //move character on map
                                 nextScene(buttonInfo.getNextScene());
                             }
@@ -435,54 +433,117 @@ public class MainController implements Initializable{
         }
     }
 
-    private void displayInventory (Inventory inventory) { //WIP, rework, save in worldstate MB?
-        ArrayList<Item> inv = inventory.getInv();
-        if (inv.size() < 6) {
-            for (int i = 0; i < inv.size(); i++) {
-                Button button = new Button();
-                setButtonHover(button, inv.get(i).getName(), inv.get(i).getItem(), 0, i);
-                //interaction with item, WIP
+    private void displayInventory (ArrayList<AbstractItem> inventory) {
+        clearMainText();
+        clearButtons();
+        displayRowOfItems(inventory,0);
+        Button forward = new Button();
+        setDisabledButton(forward,">>",1,4);
+        Button backward = new Button();
+        setDisabledButton(backward,"<<",1,3);
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
             }
+        });
+        if (inventory.size() > 5) {
+            final int[] n = {0};
+            forward.setDisable(false);
+            forward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] + 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowOfItems(inventory,n[0]);
+                    if (n[0] + 5 > inventory.size()) forward.setDisable(true);
+                    backward.setDisable(false);
+                }
+            });
+            backward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] - 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowOfItems(inventory,n[0]);
+                    if (n[0] - 5 < 0) backward.setDisable(true);
+                    forward.setDisable(false);
+                }
+            });
         }
-        else {
-            Integer n = inv.size(); //WRONG
-            Integer x = 0;
-            while (n > 0) {
-                if (n > 5 && x == 0) {
-                    for (int i = 0; i < 5; i++) {
-                        Button button = new Button();
-                        setButtonHover(button, inv.get(i).getName(), inv.get(i).getItem(), 0, i);
-                        //interaction with item, WIP
-                    }
-                    Button button = new Button();
-                    setButton(button, ">>",2,4);
-                }
-                if (n > 5 && x > 0) {
-                    for (int i = 0; i < 5; i++) {
-                        Button button = new Button();
-                        setButtonHover(button, inv.get(x * 5 + i).getName(), inv.get(x * 5 + i).getItem(), 0, i);
-                        //interaction with item, WIP
-                    }
-                    Button buttonRight = new Button();
-                    setButton(buttonRight, ">>",2,4);
-                    Button buttonLeft = new Button();
-                    setButton(buttonLeft, "<<",2,4);
-                    //way to store the page, WIP
+    }
 
-                }
-                if (n < 5) {
-                    for (int i = 0; i < n; i++) {
-                        Button button = new Button();
-                        setButtonHover(button, inv.get(x * 5 + i).getName(), inv.get(x * 5 + i).getItem(), 0, i);
-                        //interaction with item, WIP
+    private void displayRowOfItems(ArrayList<AbstractItem> inventory, Integer startingPoint) {
+        int endingPoint;
+        if (startingPoint + 4 > inventory.size()) endingPoint = inventory.size() - startingPoint;
+        else endingPoint = 4;
+        ArrayList<AbstractItem> row = new ArrayList<>();
+        for (int j = 0; j <= endingPoint; j++){
+            row.add(inventory.get(startingPoint + j));
+        }
+        int i = 0;
+        for (AbstractItem item: row
+        ) {
+            Button button = new Button();
+            setButtonHover(button, inventory.get(i).getName(), inventory.get(i).getDescription(), 0, i);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    hideButtons();
+                    Button drop = new Button();
+                    setButton(drop,"Выкинуть",0,0);
+                    drop.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            inventory.remove(item);
+                            displayInventory(inventory);
+                        }
+                    });
+                    if (item instanceof Weapon) {
+                        Button equipWeapon = new Button();
+                        setButton(equipWeapon,"Надеть",0,1);
+                        equipWeapon.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                //world.getMainCharacter.equipWeapon()
+                                //also check if able to equip?
+                                //equip to companion?
+                                inventory.remove(item);
+                                displayInventory(inventory);
+                            }
+                        });
                     }
-                    Button buttonLeft = new Button();
-                    setButton(buttonLeft, "<<",2,4);
-                    //way to store the page, WIP
+                    if (item instanceof Equipment) {
+                        Button equip = new Button();
+                        setButton(equip,"Надеть",0,1);
+                        equip.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                //world.getMainCharacter.equip()
+                                //also check if able to equip?
+                                //equip to companion?
+                                inventory.remove(item);
+                                displayInventory(inventory);
+                            }
+                        });
+                    }
+                    if (item instanceof Consumable) {
+                        Button consume = new Button();
+                        setButton(consume,"Использовать",0,1);
+                        consume.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                ((Consumable) item).consume(world.getMainCharacter());
+                                inventory.remove(item);
+                                displayInventory(inventory);
+                            }
+                        });
+                    }
                 }
-                x = x + 5;
-                n = n - 5;
-            }
+            });
+            i++;
         }
     }
 
@@ -584,11 +645,13 @@ public class MainController implements Initializable{
                             world = (World) in.readObject();
                             in.close();
                             fileIn.close();
+                            closeMenu();
+                            displayCurrentScene();
                         } catch (IOException | ClassNotFoundException c) {
                             c.printStackTrace();
                         }
                     }
-                    closeMenu(); //add loaded window here
+                     //add loaded window here
                 }
             });
             SaveSlot.getChildren().add(LoadButton);
@@ -1120,9 +1183,48 @@ public class MainController implements Initializable{
                 }
             }
         });
-
         box.getChildren().add(profilePane);
+    }
 
+    private void checkForLevelUp(AbstractScene nextScene) {
+        if (world.getMainCharacter().getLevel() < 6 && world.getMainCharacter().getExp() >= world.getMainCharacter().getMaxExp()) {
+            world.getMainCharacter().addLevel(1);
+            Integer newExp = world.getMainCharacter().getExp() - world.getMainCharacter().getMaxExp();
+            world.getMainCharacter().setExp(newExp);
+            clearMainText();
+            clearButtons();
+            addText("Вы достигли уровня" + world.getMainCharacter().getLevel() + "!");
+            addText("\nВы получаете следующие преимущества:");
+            addText(world.getMainCharacter().levelUp());
+            //if companions level up, add their things here also
+            Button button = new Button();
+            setButton(button,"Далее",0,0);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    checkForLevelUp(nextScene);
+                }
+            });
+        } else nextScene(nextScene);
+    }
+
+    private void drawMap() {
+        Pane mapPane = new Pane();
+        mapPane.setId("MapPane");
+        mapPane.setPrefSize(250,400);
+        drawTile(mapPane,115,190, world.getCurrentLocation(),99);
+        RightBox.getChildren().add(mapPane);
+    }
+
+    private void drawTile(Pane mapPane, Integer currentX, Integer currentY, AbstractLocation location, Integer cameFrom) {
+        Rectangle tile = new Rectangle(20, 20);
+        tile.setFill(location.getColor());
+        tile.relocate(currentX, currentY);
+        mapPane.getChildren().add(tile);
+        if (location.getConnectedTopBottomRightLeft()[0] != null && cameFrom != 0) drawTile(mapPane,currentX, currentY - 40,location.getConnectedTopBottomRightLeft()[0],1);
+        if (location.getConnectedTopBottomRightLeft()[1] != null && cameFrom != 1) drawTile(mapPane,currentX, currentY + 40,location.getConnectedTopBottomRightLeft()[1],0);
+        if (location.getConnectedTopBottomRightLeft()[2] != null && cameFrom != 2) drawTile(mapPane,currentX + 40, currentY,location.getConnectedTopBottomRightLeft()[2],3);
+        if (location.getConnectedTopBottomRightLeft()[3] != null && cameFrom != 3) drawTile(mapPane,currentX - 40, currentY,location.getConnectedTopBottomRightLeft()[3],2);
     }
 
     private void closeMenu () {

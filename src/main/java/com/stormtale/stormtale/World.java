@@ -1,14 +1,14 @@
 package com.stormtale.stormtale;
 
-import com.stormtale.stormtale.game.Companion;
-import com.stormtale.stormtale.game.MainCharacter;
+import com.stormtale.stormtale.game.*;
+import javafx.scene.Scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class World implements Serializable {
 
-    String currentLocation;
+    AbstractLocation currentLocation;
 
     Time currentTime;
 
@@ -16,16 +16,13 @@ public class World implements Serializable {
 
     ArrayList<Companion> companions = new ArrayList<Companion>();
 
-    //locations here
+    AbstractScene currentScene;
 
-    //quests here
+    String currentSceneText;
 
-    //companions here
-
-    //npcs here
+    ArrayList<ButtonInfo> currentButtons;
 
     public World () {
-        currentLocation = "Очень длинная длинная длинная тестовая стартовая локация";
         currentTime = new Time();
         currentTime.setCurrentTime(660);
     }
@@ -42,11 +39,11 @@ public class World implements Serializable {
         currentTime.addTime(n);
     }
 
-    public void setCurrentLocation(String location) {
+    public void setCurrentLocation(AbstractLocation location) {
         currentLocation = location;
     }
 
-    public String getCurrentLocation() {
+    public AbstractLocation getCurrentLocation() {
         return currentLocation;
     }
 
@@ -72,5 +69,29 @@ public class World implements Serializable {
 
     public void removeCompanion(Companion companion) {
         companions.remove(companion);
+    }
+
+    public ArrayList<ButtonInfo> getCurrentButtons() {
+        return currentButtons;
+    }
+
+    public void setCurrentButtons(ArrayList<ButtonInfo> currentButtons) {
+        this.currentButtons = currentButtons;
+    }
+
+    public void setCurrentScene(AbstractScene currentScene) {
+        this.currentScene = currentScene;
+    }
+
+    public AbstractScene getCurrentScene() {
+        return currentScene;
+    }
+
+    public String getCurrentSceneText() {
+        return currentSceneText;
+    }
+
+    public void setCurrentSceneText(String currentSceneText) {
+        this.currentSceneText = currentSceneText;
     }
 }

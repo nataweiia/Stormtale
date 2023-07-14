@@ -4,7 +4,7 @@ import com.stormtale.stormtale.game.AbstractCharacter;
 import com.stormtale.stormtale.game.MainCharacter;
 import com.stormtale.stormtale.game.combat.Ability;
 import com.stormtale.stormtale.game.combat.AbstractAbility;
-import com.stormtale.stormtale.game.npc.AbstractNPC;
+import com.stormtale.stormtale.game.inventory.AbstractItem;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,8 @@ public class NPC {
             2,
             3,
             4,
-            new AbstractAbility[]{Ability.testAttack}) {
+            new AbstractAbility[]{Ability.testAttack},
+            9) {
         @Override
         public String action(AbstractNPC user, ArrayList<AbstractNPC> friends, ArrayList<AbstractNPC> enemies, MainCharacter mc, Boolean isMCFriendly) {
             if (isMCFriendly) return null;
@@ -28,6 +29,11 @@ public class NPC {
                 target.add(mc);
                 return Ability.testAttack.use(user,target);
             }
+        }
+
+        @Override
+        public ArrayList<AbstractItem> dropLoot() {
+            return null;
         }
     };
 

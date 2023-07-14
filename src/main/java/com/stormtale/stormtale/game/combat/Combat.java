@@ -1,6 +1,7 @@
 package com.stormtale.stormtale.game.combat;
 
 import com.stormtale.stormtale.game.*;
+import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
 import java.util.ArrayList;
@@ -14,12 +15,17 @@ public class Combat {
 
     Integer turn = 0;
 
+    Integer totalExpReward;
+
+    ArrayList<AbstractItem> loot = new ArrayList<>();
+
     AbstractScene nextScene;
 
     public Combat (MainCharacter mc, ArrayList<Companion> companions, ArrayList<AbstractNPC> enemies) {
         this.mc = mc;
         this.companions.addAll(companions);
         this.enemies.addAll(enemies);
+        totalExpReward = 0;
     }
 
     public String turn () {
@@ -61,7 +67,11 @@ public class Combat {
         Iterator<AbstractNPC> iterator = enemies.iterator();
         while (iterator.hasNext()){
             AbstractNPC enemy = iterator.next();
-            if (enemy.getCurrentHealth() == 0) iterator.remove();
+            if (enemy.getCurrentHealth() == 0) {
+                totalExpReward = totalExpReward + enemy.getExpReward();
+                loot.addAll(enemy.dropLoot());
+                iterator.remove();
+            }
         }
         return text;
     }
@@ -97,5 +107,13 @@ public class Combat {
 
     public MainCharacter getMc() {
         return mc;
+    }
+
+    public Integer getTotalExpReward() {
+        return totalExpReward;
+    }
+
+    public ArrayList<AbstractItem> getLoot() {
+        return loot;
     }
 }

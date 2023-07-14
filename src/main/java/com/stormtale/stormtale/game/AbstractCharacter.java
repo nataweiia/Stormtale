@@ -2,7 +2,6 @@ package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.combat.AbstractAbility;
 import com.stormtale.stormtale.game.combat.AbstractCondition;
-import com.stormtale.stormtale.game.inventory.Inventory;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -30,7 +29,6 @@ public abstract class AbstractCharacter {
     Integer charisma;
 
     ArrayList<AbstractAbility> abilities = new ArrayList<>();
-    Inventory inventory;
     ArrayList<AbstractCondition> conditions = new ArrayList<>();
     IntegerProperty conditionCount = new SimpleIntegerProperty();
     //equipment slots?

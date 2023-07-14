@@ -2,7 +2,7 @@ package com.stormtale.stormtale.game.inventory;
 
 import java.util.Random;
 
-public class Weapon extends Item{
+public abstract class Weapon extends AbstractItem {
     String weaponType;
     String dmgType;
     Integer minDmg;
@@ -10,6 +10,10 @@ public class Weapon extends Item{
 
     public Weapon(String n, String t, String d, String r, Integer v) {
         super(n, t, d, r, v);
+    }
+
+    public Weapon() {
+        super();
     }
 
     public int getDmg () {

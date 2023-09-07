@@ -62,8 +62,15 @@
       </VBox>
       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <children>
-            <Button fx:id="SaveLoadButton" layoutX="105.0" layoutY="78.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
-            <Button fx:id="ShowMenuButton" layoutX="201.0" layoutY="78.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
+            <Button fx:id="SaveLoadButton" layoutX="150.0" layoutY="127.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
+            <Button fx:id="ShowMenuButton" layoutX="217.0" layoutY="127.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
+         </children>
+      </Pane>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+         <children>
+            <Button fx:id="InventoryButton" layoutX="150.0" layoutY="125.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
+            <Button fx:id="ProfileButton" layoutX="29.0" layoutY="125.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
+            <Button fx:id="QuestButton" layoutX="89.0" layoutY="125.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="45.0" />
          </children>
       </Pane>
     </children>

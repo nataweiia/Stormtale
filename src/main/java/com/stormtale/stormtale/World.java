@@ -22,9 +22,16 @@ public class World implements Serializable {
 
     ArrayList<ButtonInfo> currentButtons;
 
+    Double difficulty;
+
+    public Boolean testBerryPicked = false;
+
+    public Boolean testCombat = false;
+
     public World () {
         currentTime = new Time();
         currentTime.setCurrentTime(660);
+        difficulty = 1.0;
     }
 
     public void setCurrentTime(Time time) {
@@ -93,5 +100,25 @@ public class World implements Serializable {
 
     public void setCurrentSceneText(String currentSceneText) {
         this.currentSceneText = currentSceneText;
+    }
+
+    public Double getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Double difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void changeDifficulty() {
+        if (difficulty == 0.8) {
+            setDifficulty(1.0);
+        }
+        if (difficulty == 1) {
+            setDifficulty(1.2);
+        }
+        if (difficulty == 1.2){
+            setDifficulty(0.8);
+        }
     }
 }

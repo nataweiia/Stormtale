@@ -69,7 +69,7 @@ public class Combat {
             AbstractNPC enemy = iterator.next();
             if (enemy.getCurrentHealth() == 0) {
                 totalExpReward = totalExpReward + enemy.getExpReward();
-                loot.addAll(enemy.dropLoot());
+                if (enemy.dropLoot() != null) loot.addAll(enemy.dropLoot());
                 iterator.remove();
             }
         }

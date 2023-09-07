@@ -1,5 +1,8 @@
 package com.stormtale.stormtale.game.inventory;
 
+import com.stormtale.stormtale.game.Companion;
+import com.stormtale.stormtale.game.MainCharacter;
+
 import java.util.Random;
 
 public abstract class Weapon extends AbstractItem {
@@ -15,6 +18,14 @@ public abstract class Weapon extends AbstractItem {
     public Weapon() {
         super();
     }
+
+    public abstract void equip (MainCharacter mc);
+
+    public abstract  void equip (Companion companion);
+
+    public abstract void unequip (MainCharacter mc);
+
+    public abstract void unequip (Companion companion);
 
     public int getDmg () {
         Random random = new Random();

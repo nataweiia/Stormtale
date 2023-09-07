@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ButtonInfo {
     enum Type {
-        Combat, Item, Dialogue, Movement, Continue
+        Combat, Item, Movement, Continue
     }
     private String name;
     private String tooltip;
@@ -16,12 +16,12 @@ public class ButtonInfo {
     private Integer column;
     private AbstractItem item;
     private Type type;
-    private ArrayList<AbstractNPC> enemies;
+    private ArrayList<AbstractNPC> enemies = new ArrayList<>();
     private String startCombatText;
     private AbstractNPC npc;
     private AbstractLocation newLocation;
     private String nextFile;
-    private Boolean flag;
+    private Boolean flag = false;
     private AbstractScene nextScene;
 
     public void setName(String name) {
@@ -90,6 +90,10 @@ public class ButtonInfo {
 
     public String getStartCombatText() {
         return startCombatText;
+    }
+
+    public void setStartCombatText(String startCombatText) {
+        this.startCombatText = startCombatText;
     }
 
     public void setNpc(AbstractNPC npc) {

@@ -10,6 +10,13 @@
 
 }
 
+#MainPane {
+-fx-border-radius: 4px;
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid;
+-fx-border-width: 3px;
+}
+
 #MainFieldStoredBorder {
 -fx-border-radius: 4px;
 -fx-border-color: rgba(73, 147, 112, 0.8);
@@ -62,8 +69,30 @@
 -fx-border-radius: 4px;
 }
 
+#ProfileButton {
+-fx-graphic: url("images/character.png");
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+}
+
+#QuestButton {
+-fx-graphic: url("images/quest.png");
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+}
+
+#InventoryButton {
+-fx-graphic: url("images/inventory.png");
+-fx-background-color: rgba(73, 147, 112, 0.8);
+-fx-font-size: 12;
+-fx-border-radius: 4px;
+}
+
 #MapPane {
 -fx-background-color: rgba(255,255,255,1);
+-fx-background-radius: 4px;
 -fx-border-radius: 4px;
 -fx-border-color: rgba(73, 147, 112, 0.8);
 -fx-border-style: solid;

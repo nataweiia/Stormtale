@@ -21,7 +21,7 @@ public abstract class AbstractCharacter {
     Integer maxResource;
     Integer currentResource;
     DoubleProperty resourcePercentage = new SimpleDoubleProperty();
-    //armor? resistances?
+    Integer armor = 0;
 
     Integer strength;
     Integer dexterity;
@@ -31,7 +31,6 @@ public abstract class AbstractCharacter {
     ArrayList<AbstractAbility> abilities = new ArrayList<>();
     ArrayList<AbstractCondition> conditions = new ArrayList<>();
     IntegerProperty conditionCount = new SimpleIntegerProperty();
-    //equipment slots?
     String portraitUrl;
     String imageUrl;
 
@@ -97,12 +96,10 @@ public abstract class AbstractCharacter {
                 subtractLevel(this.level - level);
             }
         }
-        //correct things according to level?
     }
 
     public void addLevel (Integer n) {
         level = level + n;
-        //correct things here
     }
 
     public void subtractLevel(Integer n) {
@@ -202,6 +199,19 @@ public abstract class AbstractCharacter {
 
     public DoubleProperty resourcePercentageProperty() {
         return resourcePercentage;
+    }
+
+    public void setArmor(Integer armor) {
+        this.armor = armor;
+    }
+
+    public Integer getArmor() {
+        return armor;
+    }
+
+    public Integer calculateDamage (Integer damage) {
+        Integer modifier = 1 - 100 / armor;
+        return damage * modifier;
     }
 
     public void setStrength(Integer strength) {

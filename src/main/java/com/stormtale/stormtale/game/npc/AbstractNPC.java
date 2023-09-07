@@ -9,8 +9,6 @@ import java.util.ArrayList;
 
 public abstract class AbstractNPC extends AbstractCharacter {
 
-    Boolean firstConversation = false;
-
     Integer expReward;
 
     public AbstractNPC (String[] name,
@@ -73,14 +71,6 @@ public abstract class AbstractNPC extends AbstractCharacter {
     public abstract String action(AbstractNPC user, ArrayList<AbstractNPC> friends, ArrayList<AbstractNPC> enemies, MainCharacter mc, Boolean isMCFriendly); // attack patterns go here
 
     public abstract ArrayList<AbstractItem> dropLoot(); //check for quests somehow
-
-    public void setFirstConversation(Boolean condition) {
-        firstConversation = condition;
-    }
-
-    public Boolean firstConversation() {
-        return firstConversation;
-    }
 
     public Integer getExpReward() {
         return expReward;

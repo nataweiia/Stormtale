@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.fxml.Initializable;
@@ -33,6 +34,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -67,7 +69,18 @@ public class MainController implements Initializable{
     @FXML
     Button ShowMenuButton;
 
+    @FXML
+    Button InventoryButton;
+
+    @FXML
+    Button ProfileButton;
+
+    @FXML
+    Button QuestButton;
+
     World world;
+
+    Button[] buttonsForKeys = new Button[15];
 
 
     @Override
@@ -82,61 +95,60 @@ public class MainController implements Initializable{
         ShowMenuButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                showMainMenu();
             }
         });
-        addText("Вступительный текст о том как офигенна и восхитительна наша игра.\n");
-        addText("WelcomeText\n\n");
-        addText("WelcomeText");
+        InventoryButton.setDisable(true);
+        QuestButton.setDisable(true);
+        ProfileButton.setDisable(true);
+        ProfileButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayMCProfile();
+            }
+        });
+        showMainMenu();
+    }
+
+    private void showMainMenu() {
+        clearButtons();
+        clearMainText();
+        RightBox.getChildren().clear();
         Button newGame = new Button();
         setButton(newGame,"Новая игра",0,0);
         newGame.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                World newWorld = new World();
-                world = newWorld;
                 MainCharacter mc = new MainCharacter();
-                world.setMainCharacter(mc);
                 characterCreation(mc);
             }
         });
-        Button button = new Button();
-        setButtonHover(button,"11", "Вступительный текст о том как офигенна и восхитительна наша игра.\nЭто подсказка",2,1);
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                World newWorld = new World();
-                world = newWorld;
-                MainCharacter mc = new MainCharacter();
-                String[] names = new String[6];
-                for (int i = 0; i < 6; i++) {
-                    names[i] = "Эфиселия";
+        Button continueGame = new Button();
+        if (world == null) {
+            setDisabledButton(continueGame,"Продолжить",0,1);
+        } else {
+            setButton(continueGame,"Продолжить",0,1);
+            continueGame.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    displayCurrentScene();
                 }
-                mc.setName(names);
-                mc.setCharacterClass("Ученый");
-                mc.setFemale(true);
-                mc.setMaxHealth(35);
-                mc.setCurrentHealth(30);
-                mc.setMaxResource(25);
-                mc.setCurrentResource(20);
-                mc.addAbility(Ability.testAttack);
-                world.setMainCharacter(mc);
-                world.getMainCharacter().setPortraitUrl("/com/stormtale/stormtale/images/rooster.png");
-                world.getMainCharacter().setImageUrl("/com/stormtale/stormtale/images/test.png");
-                world.setCurrentLocation(Location.testLocation);
-                drawMap();
+            });
+        }
+        Button settings = new Button();
+        setButton(settings,"Настройки",0,3);
+        settings.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                showSettings();
             }
         });
+        addText("Stormtale – текстовая ролевая игра о противостоянии двух драконов, о том что случается, когда сталкиваются небо и море, "+
+                "и о штормах, которые рождаются от их союза.\n В центре острова Таки находится зияющая пропасть, Бездонная Бездна, " +
+                "ведущая на оборотную сторону мира. Столетиями дракон неба защищал мир живых от нападений с Той Стороны, " +
+                "но и люди не оставались в стороне, основав на острове аванпост и неустанно сражась с тварями Бездны. " +
+                "Но дракон неба пал, и теперь на жителей острова пала задача создать для него новое вместилище. " +
+                "\n\nСправитесь ли вы с этой задачей вовремя? Или остров, а с ним и весь мир заполонят твари Бездны?");
     }
-
-    public static AbstractScene scene1 = new AbstractScene() { //test, delete later
-        @Override
-        public void setUpScene(World world) {
-            scene1.setText("success");
-        }
-
-        @Override
-        public void changeFlag(World world) {
-
-        }
-    };
 
     private void setButton (Button button, String text, int row, int column) {
         button.setText(text);
@@ -144,6 +156,7 @@ public class MainController implements Initializable{
         button.setPrefSize(110,35);
         button.setId("Button");
         ButtonGrid.setHalignment(button, HPos.CENTER);
+        buttonsForKeys[column + row * 5] = button;
         ButtonGrid.add(button, column, row);
     }
 
@@ -172,11 +185,106 @@ public class MainController implements Initializable{
             button.getTooltip().setShowDuration(Duration.INDEFINITE);
         });
         ButtonGrid.setHalignment(button, HPos.CENTER);
+        buttonsForKeys[column + row * 5] = button;
         ButtonGrid.add(button, column, row);
     }
 
     private void clearButtons () {
         ButtonGrid.getChildren().clear();
+        for (int i = 0; i < 15; i++) {
+            buttonsForKeys[i] = null;
+        }
+    }
+
+    public void keyPress(KeyCode key) {
+        switch (key) {
+            case DIGIT1:
+                if (buttonsForKeys[0] != null) buttonsForKeys[0].fire();
+                break;
+            case DIGIT2:
+                if (buttonsForKeys[1] != null) buttonsForKeys[1].fire();
+                break;
+            case DIGIT3:
+                if (buttonsForKeys[2] != null) buttonsForKeys[2].fire();
+                break;
+            case DIGIT4:
+                if (buttonsForKeys[3] != null) buttonsForKeys[3].fire();
+                break;
+            case DIGIT5:
+                if (buttonsForKeys[4] != null) buttonsForKeys[4].fire();
+                break;
+            case Q:
+                if (buttonsForKeys[5] != null) buttonsForKeys[5].fire();
+                break;
+            case W:
+                if (buttonsForKeys[6] != null) buttonsForKeys[6].fire();
+                break;
+            case E:
+                if (buttonsForKeys[7] != null) buttonsForKeys[7].fire();
+                break;
+            case R:
+                if (buttonsForKeys[8] != null) buttonsForKeys[8].fire();
+                break;
+            case T:
+                if (buttonsForKeys[9] != null) buttonsForKeys[9].fire();
+                break;
+            case A:
+                if (buttonsForKeys[10] != null) buttonsForKeys[10].fire();
+                break;
+            case S:
+                if (buttonsForKeys[11] != null) buttonsForKeys[11].fire();
+                break;
+            case D:
+                if (buttonsForKeys[12] != null) buttonsForKeys[12].fire();
+                break;
+            case F:
+                if (buttonsForKeys[13] != null) buttonsForKeys[13].fire();
+                break;
+            case G:
+                if (buttonsForKeys[14] != null) buttonsForKeys[14].fire();
+                break;
+        }
+    }
+
+    private void showSettings() {
+        clearMainText();
+        clearButtons();
+        addText("Сложность: ");
+        if (world != null){
+            if (world.getDifficulty() == 0.8) addText("Легкая");
+            if (world.getDifficulty() == 1.0) addText("Обычная");
+            if (world.getDifficulty() == 1.2) addText("Сложная");
+        } else {
+            addText("Обычная");
+        }
+        addText("\n\n\n");
+        addText("------------------------------------------------------------");
+        addText("\n\n\n");
+        addText("Автор: Шилова Наталья\n\n");
+        addText("Помощь в написании текстов: Назар Вилинхеймов\n\n");
+        addText("Иконки и значки: icons8.com\n\n");
+        addText("Фоновые изображения: pngtree.com");
+        Button difficulty = new Button();
+        if (world != null){
+            setButton(difficulty,"Сложность",0,0);
+            difficulty.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    world.changeDifficulty();
+                    showSettings();
+                }
+            });
+        } else {
+            setDisabledButton(difficulty,"Сложность",0,0);
+        }
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                showMainMenu();
+            }
+        });
     }
 
     private void startCombat (Combat combat, String text) {
@@ -221,6 +329,7 @@ public class MainController implements Initializable{
         addText(combat.turn());
         if (combat.getMc().getCurrentHealth() == 0) {
             addText("Ваш персонаж повержен!");
+            clearButtons();
             Button button = new Button();
             setButton(button,"Далее",0,0);
             button.setOnAction(new EventHandler<ActionEvent>() {
@@ -320,6 +429,8 @@ public class MainController implements Initializable{
                         clearMainText();
                         clearButtons();
                         addText(item.use(combat.getMc(),combat.getCompanions(),combat.getEnemies()));
+                        world.getMainCharacter().removeItem(item);
+                        nextTurn(combat);
                     }
                 });
                 row++;
@@ -343,14 +454,24 @@ public class MainController implements Initializable{
     private void nextScene (AbstractScene scene) {
         scene.setUpScene(world);
         world.setCurrentScene(scene);
-        world.setCurrentButtons(scene.getButtons());
+        world.setCurrentSceneText(scene.getText());
         world.setCurrentLocation(scene.getLocation());
+        world.setCurrentButtons(scene.getButtons());
         displayCurrentScene();
     }
 
     private void displayCurrentScene() {
         clearMainText();
         clearButtons();
+        drawMap();
+        Button inventory = new Button();
+        setButton(inventory,"Инвентарь",2,4);
+        inventory.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayInventory(world.getMainCharacter().getInventory());
+            }
+        });
         ArrayList<ButtonInfo> buttons = world.getCurrentButtons();
         //add map change here
         //show profiles maybe? think about it
@@ -369,7 +490,7 @@ public class MainController implements Initializable{
                     case "Item":
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
-                            public void handle(ActionEvent actionEvent) {
+                            public void handle(ActionEvent actionEvent) { //change later to "name" gains
                                 String text = "\nВы получаете " + buttonInfo.getItem().getName() + ".";
                                 addText(text);
                                 world.setCurrentSceneText(world.getCurrentSceneText() + text);
@@ -392,6 +513,7 @@ public class MainController implements Initializable{
                                 if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
                                 Combat combat = new Combat(world.getMainCharacter(),world.getCompanions(),buttonInfo.getEnemies());
                                 combat.setNextScene(buttonInfo.getNextScene());
+                                RightBox.getChildren().clear();
                                 showProfile(combat.getMc(), LeftBox);
                                 if (combat.getCompanions() != null) {
                                     for (AbstractNPC companion: combat.getCompanions()
@@ -420,8 +542,10 @@ public class MainController implements Initializable{
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                RightBox.getChildren().clear();
+                                world.setCurrentLocation(buttonInfo.getNewLocation());
+                                drawMap();
                                 //add time
-                                //move character on map
                                 nextScene(buttonInfo.getNextScene());
                             }
                         });
@@ -436,7 +560,8 @@ public class MainController implements Initializable{
     private void displayInventory (ArrayList<AbstractItem> inventory) {
         clearMainText();
         clearButtons();
-        displayRowOfItems(inventory,0);
+        addText("В инвентаре " + world.getMainCharacter().getName()[1] + " находятся следующие предметы:");
+        if (inventory.size() > 0) displayRowOfItems(inventory,0);
         Button forward = new Button();
         setDisabledButton(forward,">>",1,4);
         Button backward = new Button();
@@ -480,12 +605,13 @@ public class MainController implements Initializable{
         if (startingPoint + 4 > inventory.size()) endingPoint = inventory.size() - startingPoint;
         else endingPoint = 4;
         ArrayList<AbstractItem> row = new ArrayList<>();
-        for (int j = 0; j <= endingPoint; j++){
+        for (int j = 0; j < endingPoint; j++){
             row.add(inventory.get(startingPoint + j));
         }
         int i = 0;
         for (AbstractItem item: row
         ) {
+            addText("\n" + item.getName());
             Button button = new Button();
             setButtonHover(button, inventory.get(i).getName(), inventory.get(i).getDescription(), 0, i);
             button.setOnAction(new EventHandler<ActionEvent>() {
@@ -499,6 +625,15 @@ public class MainController implements Initializable{
                         public void handle(ActionEvent actionEvent) {
                             inventory.remove(item);
                             displayInventory(inventory);
+                        }
+                    });
+                    Button back = new Button();
+                    setButton(back,"Назад",2,4);
+                    back.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            deleteVisibleButtons();
+                            showButtons();
                         }
                     });
                     if (item instanceof Weapon) {
@@ -547,6 +682,192 @@ public class MainController implements Initializable{
         }
     }
 
+    private void displayMCProfile() {
+        clearMainText();
+        clearButtons();
+        addText(world.getMainCharacter().getName()[0] + world.getMainCharacter().getCharacterClass() + "\n\n" + world.getMainCharacter().description() +
+                "\n\n Здоровье: " + world.getMainCharacter().getCurrentHealth() + "/" + world.getMainCharacter().getMaxHealth() +
+                "\n" + world.getMainCharacter().getResourceType() + ": " + world.getMainCharacter().getCurrentResource() + "/" + world.getMainCharacter().getMaxResource() +
+                "\nБроня: " + world.getMainCharacter().getArmor() +
+                "\n\nСила: " + world.getMainCharacter().getStrength() +
+                "\nЛовкость: " + world.getMainCharacter().getDexterity() +
+                "\nРазум: " + world.getMainCharacter().getMind() +
+                "\nХаризма: " + world.getMainCharacter().getCharisma() +
+                "\n\nОружие: " + world.getMainCharacter().getWeapon().getName() +
+                "\nГолова: " + world.getMainCharacter().getHead().getName() +
+                "\nТело: " + world.getMainCharacter().getBody().getName() +
+                "\nУкрашение: " + world.getMainCharacter().getAccessory().getName());
+        Button mcprofile = new Button();
+        setDisabledButton(mcprofile,"Профиль",0,0);
+        Button abilities = new Button();
+        setButton(abilities,"Способности",0,1);
+        abilities.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayMCActions();
+            }
+        });
+        Button mc = new Button();
+        setDisabledButton(mc, world.getMainCharacter().getName()[0],1,0);
+        if (!world.getCompanions().isEmpty()) {
+            int i = 1;
+            for (Companion companion: world.getCompanions()
+                 ) {
+                Button profile = new Button();
+                setButton(profile,companion.getName()[0],1,i);
+                profile.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        displayCompanionProfile(companion);
+                    }
+                });
+                i++;
+            }
+        }
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
+            }
+        });
+    }
+
+    private void displayMCActions() {
+        clearMainText();
+        clearButtons();
+        for (AbstractAbility ability: world.getMainCharacter().getAbilities()
+             ) {
+            addText(ability.getName());
+            addText(" : ");
+            addText(ability.getDescription());
+            addText("\n\n");
+        }
+        Button mcprofile = new Button();
+        setDisabledButton(mcprofile,"Профиль",0,0);
+        mcprofile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayMCProfile();
+            }
+        });
+        Button abilities = new Button();
+        setDisabledButton(abilities,"Способности",0,1);
+        Button mc = new Button();
+        setDisabledButton(mc, world.getMainCharacter().getName()[0],1,0);
+        if (!world.getCompanions().isEmpty()) {
+            int i = 1;
+            for (Companion companion: world.getCompanions()
+            ) {
+                Button profile = new Button();
+                setButton(profile,companion.getName()[0],1,i);
+                profile.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        displayCompanionProfile(companion);
+                    }
+                });
+                i++;
+            }
+        }
+    }
+
+    private void displayCompanionProfile(Companion companion){
+        clearMainText();
+        clearButtons();
+        addText(companion.getName()[0] + "\n" + companion.getCharacterClass() + "\n\n" + companion.description() +
+                "\n\n Здоровье: " + companion.getCurrentHealth() + "/" + companion.getMaxHealth() +
+                "\n" + companion.getResourceType() + ": " + companion.getCurrentResource() + "/" + companion.getMaxResource() +
+                "\nБроня: " + companion.getArmor() +
+                "\n\nСила: " + companion.getStrength() +
+                "\nЛовкость: " + companion.getDexterity() +
+                "\nРазум: " + companion.getMind() +
+                "\nХаризма: " + companion.getCharisma() +
+                "\n\nОружие: " + companion.getWeapon().getName());
+        Button profile = new Button();
+        setDisabledButton(profile,"Профиль",0,0);
+        Button abilities = new Button();
+        setButton(abilities,"Способности",0,1);
+        abilities.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCompanionAbilities(companion);
+            }
+        });
+        Button mc = new Button();
+        setButton(mc,world.getMainCharacter().getName()[0],1,0);
+        mc.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayMCProfile();
+            }
+        });
+        int i = 1;
+        for (Companion comp: world.getCompanions()
+        ) {
+            Button cprofile = new Button();
+            if (comp.equals(companion)){
+                setDisabledButton(cprofile,comp.getName()[0],1,i);
+            } else {
+                setButton(cprofile,comp.getName()[0],1,i);
+                cprofile.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        displayCompanionProfile(comp);
+                    }
+                });
+            }
+            i++;
+        }
+    }
+
+    private void displayCompanionAbilities(Companion companion){
+        clearMainText();
+        clearButtons();
+        for (AbstractAbility ability: companion.getAbilities()
+             ) {
+            addText(ability.getName());
+            addText(" : ");
+            addText(ability.getDescription());
+            addText("\n\n");
+        }
+        Button profile = new Button();
+        setButton(profile,"Профиль",0,0);
+        profile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCompanionProfile(companion);
+            }
+        });
+        Button abilities = new Button();
+        setDisabledButton(abilities,"Способности",0,1);
+        Button mc = new Button();
+        setButton(mc,world.getMainCharacter().getName()[0],1,0);
+        mc.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayMCProfile();
+            }
+        });
+        int i = 1;
+        for (Companion comp: world.getCompanions()
+        ) {
+            Button cprofile = new Button();
+            if (comp.equals(companion)){
+                setDisabledButton(cprofile,comp.getName()[0],1,i);
+            } else {
+                setButton(cprofile,comp.getName()[0],1,i);
+                cprofile.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        displayCompanionProfile(comp);
+                    }
+                });
+            }
+            i++;
+        }
+    }
 
     private void showSaveMenu () {
         GridPane SaveMenu = new GridPane();
@@ -568,6 +889,7 @@ public class MainController implements Initializable{
             SaveButton.setPrefSize(85,25);
             SaveButton.setMinSize(85,25);
             SaveButton.setId("MenuButton");
+            if (world == null) SaveButton.setDisable(true);
             SaveSlot.getChildren().add(SaveButton);
             Button LoadButton = new Button();
             LoadButton.setText("Загрузить");
@@ -585,7 +907,7 @@ public class MainController implements Initializable{
                     FileInputStream fileIn = new FileInputStream(filePath);
                     ObjectInputStream in = new ObjectInputStream(fileIn);
                     World tempWorld = (World) in.readObject();
-                    name.setText(tempWorld.getCurrentLocation() + ", " + tempWorld.getCurrentTime().getCurrentTime());
+                    name.setText(tempWorld.getCurrentLocation().getName());
                     in.close();
                     fileIn.close();
                 } catch (IOException | ClassNotFoundException c) {
@@ -595,6 +917,7 @@ public class MainController implements Initializable{
                 name.setText("---");
                 LoadButton.setDisable(true);
             }
+            Button DeleteButton = new Button();
             SaveButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     if (saveFile.exists()) {
@@ -632,8 +955,9 @@ public class MainController implements Initializable{
                             i.printStackTrace();
                         }
                         LoadButton.setDisable(false);
+                        DeleteButton.setDisable(false);
                     }
-                    name.setText(world.getCurrentLocation() + ", " + world.getCurrentTime().getCurrentTime());
+                    name.setText(world.getCurrentLocation().getName());
                 }
             });
             LoadButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -651,7 +975,6 @@ public class MainController implements Initializable{
                             c.printStackTrace();
                         }
                     }
-                     //add loaded window here
                 }
             });
             SaveSlot.getChildren().add(LoadButton);
@@ -659,29 +982,33 @@ public class MainController implements Initializable{
             Region space = new Region();
             HBox.setHgrow(space,Priority.ALWAYS);
             SaveSlot.getChildren().add(space);
-            Button DeleteButton = new Button();
             DeleteButton.setText("Удалить");
             DeleteButton.setTextFill(Color.WHITE);
             DeleteButton.setPrefSize(80,25);
             DeleteButton.setMinSize(80,25);
             DeleteButton.setId("MenuButton");
+            if (!saveFile.exists()) DeleteButton.setDisable(true);
             SaveSlot.getChildren().add(DeleteButton);
             DeleteButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     saveFile.delete();
                     name.setText("---");
+                    DeleteButton.setDisable(true);
                 }
             });
         }
         SaveMenu.setLayoutX((MainPane.getPrefWidth() - 520) / 2 );
         SaveMenu.setLayoutY(20);
         hideMainText();
+        hideButtons();
         MainPane.getChildren().add(SaveMenu);
         Button back = new Button();
         setButton(back,"Назад",0,0);
         back.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 closeMenu();
+                deleteVisibleButtons();
+                showButtons();
             }
         });
     }
@@ -694,9 +1021,44 @@ public class MainController implements Initializable{
         setButton(next,"Далее",0,0);
         next.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
+                displayHotkeys(mc);
+            }
+        });
+    }
+
+    private void displayHotkeys(MainCharacter mc) {
+        clearButtons();
+        clearMainText();
+        addText("Основным методом управления в игре является нажатие кнопок с помощю курсора мыши." +
+                "\nКроме того, для нажатия основных кнопок можно использовать следующие горячие клавиши:\n");
+        Button cont = new Button();
+        setButton(cont,"Далее",0,0);
+        cont.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
                 chooseSex(mc);
             }
         });
+        GridPane hotkeys = new GridPane();
+        hotkeys.setId("Menu");
+        hotkeys.setPrefWidth(500);
+        String[] keys = {"1","2","3","4","5","q","w","e","r","t","a","s","d","f","g"};
+        Integer row = 0;
+        Integer column = 0;
+        for (int i = 0; i < 15; i++){
+            StackPane keySlot = new StackPane();
+            keySlot.setId("MenuSlot");
+            keySlot.setPrefWidth(100);
+            keySlot.setPrefHeight(40);
+            hotkeys.add(keySlot,column,row);
+            column++;
+            if (column > 4) {
+                column = 0;
+                row++;
+            }
+            Label key = new Label(keys[i]);
+            keySlot.getChildren().add(key);
+        }
+        MainField.getChildren().add(hotkeys);
     }
 
     private void chooseSex(MainCharacter mc) {
@@ -724,10 +1086,21 @@ public class MainController implements Initializable{
     private void chooseClass(MainCharacter mc) {
         clearMainText();
         clearButtons();
-        addText("Выбор класса\n\n");
-        addText("САМУРАЙ\nОписание самурая\n\n");
-        addText("УЧЕНЫЙ\nОписание ученого\n\n");
-        addText("ПРОХИНДЕЙ\nОписание прохиндея\n\n");
+        addText("Выберите класс вашего персонажа:\n\n");
+        addText("САМУРАЙ\n");
+        addText("Бесстрашный воин, верный слуга императора. Как капитану стражи форпоста Таки, вам поручили почетную задачу "+
+                "оберегать жемчужину небесного дракона и найти для нее новое вместилище.\n Этот класс отличается высокой устойчивостью, но" +
+                " малым уроном. Он носит тяжелую броню и может пользоваться любым боевым оружием.\n\n");
+        addText("УЧЕНЫЙ\n");
+        addText("Молодой чиновник, занявший первое место на государственном экзамене, официальным императорским эдиктом назначенный" +
+                " Смотрителем за Мистическими Вопросами на форпост Таки. Как специалисту в вопросах магии, работу над новым вместилищем для" +
+                " небесного дракона было решено поручить вам.\nЭтот класс отличается высоким уроном, но низкой выживаемостью. Он носит легие одеяния" +
+                " и использует различные магические фокусировки в качестве оружия.\n\n");
+        addText("ПРОХИНДЕЙ\n");
+        addText("Разбойник, бродяга, фокусник, авантюрист. Вас можно описать любым из этих слов. Вы совершили множество преступлений, но " +
+                "каждое из них следовало духу закона, хоть и не букве. В отсутствие лучших кандидатов, вас арестовали за одно из ваших многочисленных " +
+                "преступлений и в наказание поручили восстановить тело небесного дракона. Хоть вы и недовольны арестом, дело как раз вам по душе.\n" +
+                "Этот класс отличается средними уроном и выживаемостью, и кроме того обладает необычными способностями, способными переломить ход боя.\n\n");
         Button samurai = new Button();
         setButton(samurai,"Самурай",0,0);
         samurai.setOnAction(new EventHandler<ActionEvent>() {
@@ -771,8 +1144,10 @@ public class MainController implements Initializable{
         });
         cont.setDisable(true);
         GridPane statMenu = new GridPane();
+
         statMenu.setId("Menu");
         statMenu.setPrefWidth(200);
+        MainField.getChildren().add(statMenu);
         for (int i = 0; i < 5; i++) {
             RowConstraints row = new RowConstraints(40);
             statMenu.getRowConstraints().add(row);
@@ -960,7 +1335,6 @@ public class MainController implements Initializable{
             }
         });
 
-        MainField.getChildren().add(statMenu);
     }
 
     private void setUpStatSlot (HBox statSlot, GridPane statMenu, Label text, Integer number, Button plus, Button minus, Label count) {
@@ -1035,7 +1409,7 @@ public class MainController implements Initializable{
         name3.setId("NameField");
         name3.setPrefWidth(110);
         name3.setText(DefaultNames[3]);
-        addText("Старый знакомый пришласил ");
+        addText("Старый знакомый пригласил ");
         MainField.getChildren().add(name3);
         addText(" сыграть раунд в го.\n");
         TextField name4 = new TextField();
@@ -1067,6 +1441,13 @@ public class MainController implements Initializable{
                 name[4] = name4.getText();
                 name[5] = name5.getText();
                 mc.setName(name);
+                World newWorld = new World();
+                world = newWorld;
+                world.setMainCharacter(mc);
+                System.out.println(world.getMainCharacter().getCharacterClass());
+                if (world.getMainCharacter().getCharacterClass().equals("Самурай")) nextScene(Scene.testScene1);
+                else if (world.getMainCharacter().getCharacterClass().equals("Ученый")) nextScene(Scene.ScholarStart1);
+                else nextScene(Scene.testScene1);
             }
         });
     }
@@ -1209,22 +1590,55 @@ public class MainController implements Initializable{
     }
 
     private void drawMap() {
+        RightBox.getChildren().clear();
         Pane mapPane = new Pane();
-        mapPane.setId("MapPane");
-        mapPane.setPrefSize(250,400);
-        drawTile(mapPane,115,190, world.getCurrentLocation(),99);
-        RightBox.getChildren().add(mapPane);
+        //mapPane.setId("MapPane");
+        mapPane.setPrefSize(250,300);
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(4);
+        clip.setArcHeight(4);
+        mapPane.setClip(clip);
+        mapPane.layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
+            clip.setWidth(newValue.getWidth());
+            clip.setHeight(newValue.getHeight());
+        });
+        StackPane mapStack = new StackPane(mapPane);
+        mapStack.setId("MapPane");
+        mapStack.setPrefSize(250,300);
+        ArrayList<AbstractLocation> connected = new ArrayList<>();
+        drawTile(mapPane,115,140, world.getCurrentLocation(),connected);
+        Circle dot = new Circle(125,150,5,Color.BLACK);
+        mapPane.getChildren().add(dot);
+        RightBox.getChildren().add(mapStack);
     }
 
-    private void drawTile(Pane mapPane, Integer currentX, Integer currentY, AbstractLocation location, Integer cameFrom) {
+    private void drawTile(Pane mapPane, Integer currentX, Integer currentY, AbstractLocation location, ArrayList<AbstractLocation> connected) {
+        connected.add(location);
         Rectangle tile = new Rectangle(20, 20);
         tile.setFill(location.getColor());
         tile.relocate(currentX, currentY);
         mapPane.getChildren().add(tile);
-        if (location.getConnectedTopBottomRightLeft()[0] != null && cameFrom != 0) drawTile(mapPane,currentX, currentY - 40,location.getConnectedTopBottomRightLeft()[0],1);
-        if (location.getConnectedTopBottomRightLeft()[1] != null && cameFrom != 1) drawTile(mapPane,currentX, currentY + 40,location.getConnectedTopBottomRightLeft()[1],0);
-        if (location.getConnectedTopBottomRightLeft()[2] != null && cameFrom != 2) drawTile(mapPane,currentX + 40, currentY,location.getConnectedTopBottomRightLeft()[2],3);
-        if (location.getConnectedTopBottomRightLeft()[3] != null && cameFrom != 3) drawTile(mapPane,currentX - 40, currentY,location.getConnectedTopBottomRightLeft()[3],2);
+        location.setConnected();
+        if (location.getConnectedTop() != null && !connected.contains(location.getConnectedTop())) {
+            Line line = new Line(currentX + 10, currentY, currentX + 10, currentY - 20);
+            mapPane.getChildren().add(line);
+            drawTile(mapPane, currentX, currentY - 40, location.getConnectedTop(), connected);
+        }
+        if (location.getConnectedBottom() != null && !connected.contains(location.getConnectedBottom())) {
+            Line line = new Line(currentX + 10, currentY + 20, currentX + 10, currentY + 40);
+            mapPane.getChildren().add(line);
+            drawTile(mapPane, currentX, currentY + 40, location.getConnectedBottom(), connected);
+        }
+        if (location.getConnectedLeft() != null && !connected.contains(location.getConnectedLeft())) {
+            Line line = new Line(currentX, currentY + 10, currentX - 20, currentY + 10);
+            mapPane.getChildren().add(line);
+            drawTile(mapPane, currentX - 40, currentY, location.getConnectedLeft(), connected);
+        }
+        if (location.getConnectedRight() != null && !connected.contains(location.getConnectedRight())) {
+            Line line = new Line(currentX + 20, currentY + 10, currentX + 40, currentY + 10);
+            mapPane.getChildren().add(line);
+            drawTile(mapPane, currentX + 40, currentY, location.getConnectedRight(), connected);
+        }
     }
 
     private void closeMenu () {
@@ -1240,6 +1654,9 @@ public class MainController implements Initializable{
         for (int i = 0; i < ButtonGrid.getChildren().size(); i++) {
             ButtonGrid.getChildren().get(i).setVisible(false);
             ButtonGrid.getChildren().get(i).setManaged(false);
+            for (int j = 0; j < 15; j++) {
+                buttonsForKeys[i] = null;
+            }
         }
     }
 
@@ -1247,6 +1664,8 @@ public class MainController implements Initializable{
         for (int i = 0; i <  ButtonGrid.getChildren().size(); i++) {
             ButtonGrid.getChildren().get(i).setVisible(true);
             ButtonGrid.getChildren().get(i).setManaged(true);
+            int j = GridPane.getRowIndex(ButtonGrid.getChildren().get(i)) * 5 + GridPane.getColumnIndex(ButtonGrid.getChildren().get(i));
+            if(ButtonGrid.getChildren().get(i) instanceof  Button)buttonsForKeys[j] = (Button)ButtonGrid.getChildren().get(i);
         }
     }
 
@@ -1254,7 +1673,11 @@ public class MainController implements Initializable{
         Iterator<Node> iterator = ButtonGrid.getChildren().iterator();
         while (iterator.hasNext()){
             Node node = iterator.next();
-            if (node.isVisible()) iterator.remove();
+            if (node.isVisible()) {
+                int j = GridPane.getRowIndex(node) * 5 + GridPane.getColumnIndex(node);
+                buttonsForKeys[j] = null;
+                iterator.remove();
+            }
         }
     }
 

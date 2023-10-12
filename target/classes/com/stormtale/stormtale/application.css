@@ -7,15 +7,8 @@
 -fx-font-size: 16;
 -fx-padding: 5px;
 -fx-font-style: italic;
-
 }
 
-#MainPane {
--fx-border-radius: 4px;
--fx-border-color: rgba(73, 147, 112, 0.8);
--fx-border-style: solid;
--fx-border-width: 3px;
-}
 
 #MainFieldStoredBorder {
 -fx-border-radius: 4px;
@@ -115,8 +108,24 @@
 -fx-border-width: 1px;
 }
 
+#QuestMenu {
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid none;
+-fx-border-width: 1px;
+}
+
+#QuestMenuSlot {
+-fx-border-color: rgba(73, 147, 112, 0.8);
+-fx-border-style: solid none;
+-fx-border-width: 1px;
+}
+
 #PopUp {
 -fx-background-color: rgba(0,0,0,0.7);
+}
+
+#Struck .text {
+-fx-strikethrough: true;
 }
 
 #NameField {

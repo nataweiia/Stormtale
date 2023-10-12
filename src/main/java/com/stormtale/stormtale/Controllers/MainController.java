@@ -26,9 +26,7 @@ import javafx.fxml.Initializable;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -55,9 +53,6 @@ public class MainController implements Initializable{
     ScrollPane MainScroll;
 
     @FXML
-    Pane MainPane;
-
-    @FXML
     VBox LeftBox;
 
     @FXML
@@ -80,6 +75,8 @@ public class MainController implements Initializable{
 
     World world;
 
+    String currentText;
+
     Button[] buttonsForKeys = new Button[15];
 
 
@@ -99,7 +96,19 @@ public class MainController implements Initializable{
             }
         });
         InventoryButton.setDisable(true);
+        InventoryButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayInventory(world.getMainCharacter().getInventory());
+            }
+        });
         QuestButton.setDisable(true);
+        QuestButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayQuests();
+            }
+        });
         ProfileButton.setDisable(true);
         ProfileButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -155,7 +164,7 @@ public class MainController implements Initializable{
         button.setPadding(new Insets(5));
         button.setPrefSize(110,35);
         button.setId("Button");
-        ButtonGrid.setHalignment(button, HPos.CENTER);
+        GridPane.setHalignment(button, HPos.CENTER);
         buttonsForKeys[column + row * 5] = button;
         ButtonGrid.add(button, column, row);
     }
@@ -166,7 +175,7 @@ public class MainController implements Initializable{
         button.setPrefSize(110,35);
         button.setId("Button");
         button.setDisable(true);
-        ButtonGrid.setHalignment(button, HPos.CENTER);
+        GridPane.setHalignment(button, HPos.CENTER);
         ButtonGrid.add(button, column, row);
     }
 
@@ -184,7 +193,7 @@ public class MainController implements Initializable{
             button.getTooltip().setY(bounds.getMinY()-50);
             button.getTooltip().setShowDuration(Duration.INDEFINITE);
         });
-        ButtonGrid.setHalignment(button, HPos.CENTER);
+        GridPane.setHalignment(button, HPos.CENTER);
         buttonsForKeys[column + row * 5] = button;
         ButtonGrid.add(button, column, row);
     }
@@ -539,13 +548,16 @@ public class MainController implements Initializable{
                         });
                         break;
                     case "Movement":
+
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 RightBox.getChildren().clear();
                                 world.setCurrentLocation(buttonInfo.getNewLocation());
                                 drawMap();
-                                //add time
+                                Random r = new Random();
+                                int time = r.nextInt(6) + 3;
+                                world.addTime(time);
                                 nextScene(buttonInfo.getNextScene());
                             }
                         });
@@ -869,20 +881,60 @@ public class MainController implements Initializable{
         }
     }
 
+    private void displayQuests() {
+        GridPane quests = new GridPane();
+        quests.setId("QuestMenu");
+        quests.setPadding(new Insets(5, 5, 5, 5));
+        for (int i = 0; i < world.getCurrentQuests().size(); i++){
+            VBox questBox = new VBox();
+            questBox.setId("QuestMenu");
+            questBox.setPadding(new Insets(5, 5, 5, 5));
+            Label questName = new Label(world.getCurrentQuests().get(i).getName() + "\n\n");
+            questBox.getChildren().add(questName);
+            for (int j = 0; j < (world.getCurrentQuests().get(i).getPastStages().size()); j++) {
+                Label stage = new Label(world.getCurrentQuests().get(i).getPastStages().get(j) + "\n");
+                stage.setId("Struck");
+                questBox.getChildren().add(stage);
+            }
+            Label currentStage = new Label(world.getCurrentQuests().get(i).getCurrentStage()[1] + "\n\n");
+            questBox.getChildren().add(currentStage);
+            quests.add(questBox,0,i);
+            VBox descriptionBox = new VBox();
+            descriptionBox.setId("QuestMenu");
+            descriptionBox.setPadding(new Insets(5, 5, 5, 5));
+            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[2]);
+            descriptionBox.getChildren().add(description);
+            quests.add(descriptionBox,1,i);
+        }
+        hideMainText();
+        hideButtons();
+        MainScroll.setContent(quests);
+        Button back = new Button();
+        setButton(back,"Назад",0,0);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                closeMenu();
+                deleteVisibleButtons();
+                showButtons();
+            }
+        });
+    }
+
     private void showSaveMenu () {
         GridPane SaveMenu = new GridPane();
         SaveMenu.setId("Menu");
-        SaveMenu.setPrefWidth(520);
+        //SaveMenu.setPrefWidth(520);
         for (int i = 0; i < 10; i++) {
             RowConstraints row = new RowConstraints(50);
             SaveMenu.getRowConstraints().add(row);
             HBox SaveSlot = new HBox(5);
             SaveSlot.setId("MenuSlot");
-            SaveSlot.setPrefWidth(SaveMenu.getPrefWidth());
+            //SaveSlot.setPrefWidth(SaveMenu.getPrefWidth());
+            SaveSlot.prefWidthProperty().bind(MainScroll.widthProperty());
             SaveSlot.setPadding(new Insets(5, 5, 5, 5));
             SaveSlot.setAlignment(Pos.CENTER_LEFT);
             SaveMenu.add(SaveSlot,0,i);
-            SaveMenu.setHalignment(SaveSlot, HPos.CENTER);
+            GridPane.setHalignment(SaveSlot, HPos.CENTER);
             Button SaveButton = new Button();
             SaveButton.setText("Сохранить");
             SaveButton.setTextFill(Color.WHITE);
@@ -997,11 +1049,12 @@ public class MainController implements Initializable{
                 }
             });
         }
-        SaveMenu.setLayoutX((MainPane.getPrefWidth() - 520) / 2 );
+        SaveMenu.setLayoutX((MainField.getPrefWidth() - 520) / 2 );
         SaveMenu.setLayoutY(20);
         hideMainText();
         hideButtons();
-        MainPane.getChildren().add(SaveMenu);
+        //MainField.getChildren().add(SaveMenu);
+        MainScroll.setContent(SaveMenu);
         Button back = new Button();
         setButton(back,"Назад",0,0);
         back.setOnAction(new EventHandler<ActionEvent>() {
@@ -1444,7 +1497,9 @@ public class MainController implements Initializable{
                 World newWorld = new World();
                 world = newWorld;
                 world.setMainCharacter(mc);
-                System.out.println(world.getMainCharacter().getCharacterClass());
+                ProfileButton.setDisable(false);
+                QuestButton.setDisable(false);
+                InventoryButton.setDisable(false);
                 if (world.getMainCharacter().getCharacterClass().equals("Самурай")) nextScene(Scene.testScene1);
                 else if (world.getMainCharacter().getCharacterClass().equals("Ученый")) nextScene(Scene.ScholarStart1);
                 else nextScene(Scene.testScene1);
@@ -1610,6 +1665,9 @@ public class MainController implements Initializable{
         Circle dot = new Circle(125,150,5,Color.BLACK);
         mapPane.getChildren().add(dot);
         RightBox.getChildren().add(mapStack);
+        Label time = new Label("Время: " + world.getTime());
+        time.setId("MainField");
+        RightBox.getChildren().add(time);
     }
 
     private void drawTile(Pane mapPane, Integer currentX, Integer currentY, AbstractLocation location, ArrayList<AbstractLocation> connected) {
@@ -1642,11 +1700,7 @@ public class MainController implements Initializable{
     }
 
     private void closeMenu () {
-        int n = MainPane.getChildren().size() - 1;
-        while (n > 0) {
-            MainPane.getChildren().remove(n);
-            n--;
-        }
+        MainScroll.setContent(MainField);
         showMainText();
     }
 
@@ -1682,18 +1736,24 @@ public class MainController implements Initializable{
     }
 
     private void showMainText () {
-        MainField.setVisible(true);
-        MainField.setManaged(true);
+        clearMainText();
+        addText(currentText);
     }
 
     private void hideMainText () {
-        MainField.setVisible(false);
-        MainField.setManaged(false);
+        StringBuilder sb = new StringBuilder();
+        for (Node node : MainField.getChildren()) {
+            if (node instanceof Text) {
+                sb.append(((Text) node).getText());
+            }
+        }
+        currentText = sb.toString();
+        clearMainText();
     }
 
     private void clearMainText () {
         MainField.getChildren().clear();
-        MainField.resize(MainPane.getPrefWidth(),0);
+        MainField.setPrefHeight(0);
     }
 
     private void addText (String string) {

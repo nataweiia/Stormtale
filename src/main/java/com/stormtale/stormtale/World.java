@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class World implements Serializable {
 
@@ -28,10 +30,18 @@ public class World implements Serializable {
 
     public Boolean testCombat = false;
 
+    Map<String, Boolean> flags = new HashMap<String, Boolean>();
+
+    ArrayList<AbstractQuest> currentQuests = new ArrayList<AbstractQuest>();
+
+    ArrayList<AbstractQuest> completedQuests = new ArrayList<AbstractQuest>();
+
+
     public World () {
         currentTime = new Time();
         currentTime.setCurrentTime(660);
         difficulty = 1.0;
+        flags.put("PrologueMission",true);
     }
 
     public void setCurrentTime(Time time) {
@@ -40,6 +50,10 @@ public class World implements Serializable {
 
     public Time getCurrentTime() {
         return currentTime;
+    }
+
+    public String getTime() {
+        return currentTime.getCurrentTime();
     }
 
     public void addTime(Integer n) {
@@ -120,5 +134,38 @@ public class World implements Serializable {
         if (difficulty == 1.2){
             setDifficulty(0.8);
         }
+    }
+
+    public void completeFlag (String flag) {
+        flags.put(flag,false);
+    }
+
+    public void changeFlag (String flag) {
+        if (flags.get(flag)) flags.put(flag,false);
+        else flags.put(flag,true);
+    }
+
+    public void activateFlag (String flag) {
+        flags.put(flag,true);
+    }
+
+    public ArrayList<AbstractQuest> getCompletedQuests() {
+        return completedQuests;
+    }
+
+    public ArrayList<AbstractQuest> getCurrentQuests() {
+        return currentQuests;
+    }
+
+    public void addQuest (AbstractQuest quest) {
+        currentQuests.add(quest);
+    }
+
+    public void finishQuest(AbstractQuest quest){
+        mainCharacter.addExp(quest.getExpReward());
+        mainCharacter.addMoney(quest.getMoneyReward());
+        if (quest.getItemReward() != null) mainCharacter.addItem(quest.getItemReward());
+        currentQuests.remove(quest);
+        completedQuests.add(quest);
     }
 }

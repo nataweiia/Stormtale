@@ -38,16 +38,12 @@
             <Insets bottom="50.0" top="15.0" />
          </GridPane.margin>
       </GridPane>
-      <ScrollPane fx:id="MainScroll" prefHeight="679.0" prefWidth="600.0" GridPane.columnIndex="1">
+      <ScrollPane fx:id="MainScroll" fitToWidth="true" prefHeight="679.0" prefWidth="600.0" GridPane.columnIndex="1">
          <GridPane.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </GridPane.margin>
          <content>
-            <Pane fx:id="MainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="567.0">
-               <children>
-                  <TextFlow fx:id="MainField" lineSpacing="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="568.0" />
-               </children>
-            </Pane>
+            <TextFlow fx:id="MainField" lineSpacing="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="568.0" />
          </content>
       </ScrollPane>
       <VBox fx:id="LeftBox" fillWidth="false" prefWidth="300.0" spacing="15.0" GridPane.valignment="TOP">

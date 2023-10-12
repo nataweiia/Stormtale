@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class MainCharacter extends AbstractCharacter implements Serializable {
 
-
-    //equipment slots?
     Integer exp;
 
     Integer maxExp;
+
+    Integer money;
 
     ArrayList<AbstractItem> inventory = new ArrayList<>();
 
@@ -135,6 +135,18 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
 
     public void addExp(Integer exp) {
         this.exp = this.exp + exp;
+    }
+
+    public Integer getMoney() {
+        return money;
+    }
+
+    public void setMoney(Integer money) {
+        this.money = money;
+    }
+
+    public void addMoney(Integer money) {
+        this.money = this.money + money;
     }
 
     public void setInventory(ArrayList<AbstractItem> inventory) {

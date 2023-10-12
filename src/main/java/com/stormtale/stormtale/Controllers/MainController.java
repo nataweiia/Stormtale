@@ -909,8 +909,68 @@ public class MainController implements Initializable{
         hideMainText();
         hideButtons();
         MainScroll.setContent(quests);
+        Button current = new Button();
+        setDisabledButton(current,"Текущие",0,0);
+        Button completed = new Button();
+        setButton(completed,"Завершенные",0,1);
+        completed.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCompletedQuests();
+            }
+        });
         Button back = new Button();
-        setButton(back,"Назад",0,0);
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                closeMenu();
+                deleteVisibleButtons();
+                showButtons();
+            }
+        });
+    }
+
+    private void displayCompletedQuests() {
+        GridPane quests = new GridPane();
+        quests.setId("QuestMenu");
+        quests.setPadding(new Insets(5, 5, 5, 5));
+        for (int i = 0; i < world.getCompletedQuests().size(); i++){
+            VBox questBox = new VBox();
+            questBox.setId("QuestMenu");
+            questBox.setPadding(new Insets(5, 5, 5, 5));
+            Label questName = new Label(world.getCompletedQuests().get(i).getName() + "\n\n");
+            questBox.getChildren().add(questName);
+            for (int j = 0; j < (world.getCompletedQuests().get(i).getPastStages().size()); j++) {
+                Label stage = new Label(world.getCompletedQuests().get(i).getPastStages().get(j) + "\n");
+                stage.setId("Struck");
+                questBox.getChildren().add(stage);
+            }
+            Label currentStage = new Label(world.getCompletedQuests().get(i).getCurrentStage()[1] + "\n\n");
+            currentStage.setId("Struck");
+            questBox.getChildren().add(currentStage);
+            quests.add(questBox,0,i);
+            VBox descriptionBox = new VBox();
+            descriptionBox.setId("QuestMenu");
+            descriptionBox.setPadding(new Insets(5, 5, 5, 5));
+            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[2]);
+            descriptionBox.getChildren().add(description);
+            quests.add(descriptionBox,1,i);
+        }
+        hideMainText();
+        hideButtons();
+        MainScroll.setContent(quests);
+        Button current = new Button();
+        setButton(current,"Текущие",0,0);
+        current.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayQuests();
+            }
+        });
+        Button completed = new Button();
+        setDisabledButton(completed,"Завершенные",0,1);
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
         back.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 closeMenu();
@@ -1665,6 +1725,9 @@ public class MainController implements Initializable{
         Circle dot = new Circle(125,150,5,Color.BLACK);
         mapPane.getChildren().add(dot);
         RightBox.getChildren().add(mapStack);
+        Label location = new Label("Локация: " + world.getCurrentLocation().getName());
+        location.setId("MainField");
+        RightBox.getChildren().add(location);
         Label time = new Label("Время: " + world.getTime());
         time.setId("MainField");
         RightBox.getChildren().add(time);

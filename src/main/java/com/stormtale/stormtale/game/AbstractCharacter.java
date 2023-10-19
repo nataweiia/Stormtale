@@ -2,14 +2,16 @@ package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.combat.AbstractAbility;
 import com.stormtale.stormtale.game.combat.AbstractCondition;
+import com.stormtale.stormtale.game.inventory.AbstractItem;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractCharacter {
+public abstract class AbstractCharacter implements Serializable {
     String[] name = new String[6];
     Boolean female;
     String characterClass;
@@ -21,7 +23,7 @@ public abstract class AbstractCharacter {
     Integer maxResource;
     Integer currentResource;
     DoubleProperty resourcePercentage = new SimpleDoubleProperty();
-    Integer armor = 0;
+    Integer protection = 0;
 
     Integer strength;
     Integer dexterity;
@@ -31,6 +33,9 @@ public abstract class AbstractCharacter {
     ArrayList<AbstractAbility> abilities = new ArrayList<>();
     ArrayList<AbstractCondition> conditions = new ArrayList<>();
     IntegerProperty conditionCount = new SimpleIntegerProperty();
+    Integer money;
+
+    ArrayList<AbstractItem> inventory = new ArrayList<>();
     String portraitUrl;
     String imageUrl;
 
@@ -201,17 +206,20 @@ public abstract class AbstractCharacter {
         return resourcePercentage;
     }
 
-    public void setArmor(Integer armor) {
-        this.armor = armor;
+    public void setProtection(Integer protection) {
+        this.protection = protection;
     }
 
-    public Integer getArmor() {
-        return armor;
+    public Integer getProtection() {
+        return protection;
     }
 
-    public Integer calculateDamage (Integer damage) {
-        Integer modifier = 1 - 100 / armor;
-        return damage * modifier;
+    public void addProtection(Integer armor) {
+        protection = protection + armor;
+    }
+
+    public void subtractProtection(Integer armor) {
+        protection = protection - armor;
     }
 
     public void setStrength(Integer strength) {
@@ -304,6 +312,38 @@ public abstract class AbstractCharacter {
 
     public IntegerProperty conditionCountProperty() {
         return conditionCount;
+    }
+
+    public Integer getMoney() {
+        return money;
+    }
+
+    public void setMoney(Integer money) {
+        this.money = money;
+    }
+
+    public void addMoney(Integer money) {
+        this.money = this.money + money;
+    }
+
+    public void removeMoney(Integer money) {
+        this.money = this.money - money;
+    }
+
+    public void setInventory(ArrayList<AbstractItem> inventory) {
+        this.inventory = inventory;
+    }
+
+    public ArrayList<AbstractItem> getInventory() {
+        return inventory;
+    }
+
+    public void addItem(AbstractItem item) {
+        inventory.add(item);
+    }
+
+    public void removeItem(AbstractItem item) {
+        inventory.remove(item);
     }
 
     public String getPortraitUrl() {

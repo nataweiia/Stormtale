@@ -2,41 +2,61 @@ package com.stormtale.stormtale.game.inventory;
 
 import com.stormtale.stormtale.game.Companion;
 import com.stormtale.stormtale.game.MainCharacter;
+import com.stormtale.stormtale.game.npc.AbstractNPC;
 
-import java.util.Random;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public abstract class Weapon extends AbstractItem {
-    String weaponType;
-    String dmgType;
-    Integer minDmg;
-    Integer maxDmg;
+public class Weapon implements Serializable {
+    public static AbstractWeapon testWeapon = new AbstractWeapon("test","Оружие","Какое-то оружие","Редкий",300,"тест",3,4) {
 
-    public Weapon(String n, String t, String d, String r, Integer v) {
-        super(n, t, d, r, v);
-    }
+        @Override
+        public void equip(MainCharacter mc) {
+            System.out.println("smth works1");
+        }
+        @Override
+        public void equip(Companion companion) {
 
-    public Weapon() {
-        super();
-    }
+        }
+        @Override
+        public void unequip(MainCharacter mc) {
+            System.out.println("smth works2");
+        }
+        @Override
+        public void unequip(Companion companion) {
 
-    public abstract void equip (MainCharacter mc);
+        }
+        @Override
+        public String use(MainCharacter mc, ArrayList<AbstractNPC> companions, ArrayList<AbstractNPC> enemies) {
+            return null;
+        }
+    };
 
-    public abstract  void equip (Companion companion);
+    public static AbstractWeapon ScholarStartingWeapon = new AbstractWeapon("Талисман","Оружие",
+            "Нефритовый талисман с выгравированными на нем словами Сутры Об Очищении Сознания.","Обычный",50,"Фокусировка",2,4) {
+        @Override
+        public void equip(MainCharacter mc) {
 
-    public abstract void unequip (MainCharacter mc);
+        }
 
-    public abstract void unequip (Companion companion);
+        @Override
+        public void equip(Companion companion) {
 
-    public int getDmg () {
-        Random random = new Random();
-        return random.nextInt(maxDmg - minDmg) + minDmg;
-    }
+        }
 
-    public String getWeaponType () {
-        return weaponType;
-    }
+        @Override
+        public void unequip(MainCharacter mc) {
 
-    public String getDmgType () {
-        return dmgType;
-    }
+        }
+
+        @Override
+        public void unequip(Companion companion) {
+
+        }
+
+        @Override
+        public String use(MainCharacter mc, ArrayList<AbstractNPC> companions, ArrayList<AbstractNPC> enemies) {
+            return null;
+        }
+    };
 }

@@ -5,11 +5,14 @@ import com.stormtale.stormtale.game.MainCharacter;
 import com.stormtale.stormtale.game.combat.AbstractAbility;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractNPC extends AbstractCharacter {
+public abstract class AbstractNPC extends AbstractCharacter implements Serializable {
 
     Integer expReward;
+
+    Double difficulty;
 
     public AbstractNPC (String[] name,
                         Boolean female,
@@ -64,13 +67,15 @@ public abstract class AbstractNPC extends AbstractCharacter {
         setResourcePercentage(1.0);
     }
 
-    public AbstractNPC() {
+    public AbstractNPC() {    }
 
+    public AbstractNPC(String[] name){
+        setName(name);
     }
 
     public abstract String action(AbstractNPC user, ArrayList<AbstractNPC> friends, ArrayList<AbstractNPC> enemies, MainCharacter mc, Boolean isMCFriendly); // attack patterns go here
 
-    public abstract ArrayList<AbstractItem> dropLoot(); //check for quests somehow
+    public abstract ArrayList<AbstractItem> dropLoot();
 
     public Integer getExpReward() {
         return expReward;
@@ -78,5 +83,13 @@ public abstract class AbstractNPC extends AbstractCharacter {
 
     public void setExpReward(Integer expReward) {
         this.expReward = expReward;
+    }
+
+    public Double getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Double difficulty) {
+        this.difficulty = difficulty;
     }
 }

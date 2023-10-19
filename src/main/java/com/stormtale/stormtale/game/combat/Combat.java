@@ -4,10 +4,11 @@ import com.stormtale.stormtale.game.*;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Combat {
+public class Combat implements Serializable {
 
     MainCharacter mc;
     ArrayList<AbstractNPC> enemies = new ArrayList<>();
@@ -78,8 +79,8 @@ public class Combat {
 
     public void tickConditions (AbstractCharacter character, String text) {
         for (AbstractCondition condition: character.getConditions()) {
-            condition.apply(character);
             condition.tick();
+            condition.apply(character);
             text = text + character.getName()[0] + condition.getDescription();
             if (condition.getDuration() == 0) character.removeCondition(condition);
         }

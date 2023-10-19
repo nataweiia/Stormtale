@@ -2,12 +2,13 @@ package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractQuest {
+public abstract class AbstractQuest implements Serializable {
     String name;
     Map<Integer,String[]> stages = new HashMap<Integer,String[]>();
 
@@ -70,6 +71,10 @@ public abstract class AbstractQuest {
 
     public Map<Integer, String[]> getStages() {
         return stages;
+    }
+
+    public void addStage (Integer n, String[] s) {
+        stages.put(n,s);
     }
 
     public String[] getCurrentStage() {

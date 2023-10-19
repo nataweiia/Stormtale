@@ -2,7 +2,10 @@ package com.stormtale.stormtale.game;
 
 import javafx.scene.paint.Color;
 
-public abstract class AbstractLocation {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public abstract class AbstractLocation implements Serializable {
     Color color;
     String name;
     AbstractLocation connectedTop;
@@ -20,6 +23,8 @@ public abstract class AbstractLocation {
     }
 
     public abstract void setConnected();
+
+    public abstract AbstractScene getScene();
 
     public Color getColor() {
         return color;

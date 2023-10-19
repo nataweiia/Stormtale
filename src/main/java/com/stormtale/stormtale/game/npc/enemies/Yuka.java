@@ -6,18 +6,19 @@ import com.stormtale.stormtale.game.combat.Ability;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Yuka extends AbstractNPC {
+public class Yuka extends AbstractNPC implements Serializable {
 
-    public Yuka() {
+    public Yuka( Double difficulty) {
         setName(new String[]{"Юка", "Юки", "Юке", "Юку", "Юкой", "Юке"});
         setFemale(true);
-        setMaxHealth(11);
-        setCurrentHealth(11);
+        setMaxHealth((int) (11 * difficulty));
+        setCurrentHealth((int) (11 * difficulty));
         setResourceType("Выносливость");
-        setMaxResource(8);
-        setCurrentResource(8);
+        setMaxResource((int) (8 * difficulty));
+        setCurrentResource((int) (8 * difficulty));
         setStrength(1);
         setDexterity(2);
         setMind(3);

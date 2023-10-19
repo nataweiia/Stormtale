@@ -2,9 +2,10 @@ package com.stormtale.stormtale.game.combat;
 
 import com.stormtale.stormtale.game.AbstractCharacter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractAbility {
+public abstract class AbstractAbility implements Serializable {
     private String name;
     private String description;
     private Integer cost;
@@ -25,6 +26,10 @@ public abstract class AbstractAbility {
     public abstract String use (AbstractCharacter user, ArrayList<AbstractCharacter> targets);
 
     public abstract String use (AbstractCharacter user, AbstractCharacter target);
+
+    public abstract String use (AbstractCharacter user, ArrayList<AbstractCharacter> targets, Double difficulty);
+
+    public abstract String use (AbstractCharacter user, AbstractCharacter target, Double difficulty);
 
     public void setName(String name) {
         this.name = name;

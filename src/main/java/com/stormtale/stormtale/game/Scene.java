@@ -4,7 +4,9 @@ import com.stormtale.stormtale.World;
 import com.stormtale.stormtale.game.inventory.Item;
 import com.stormtale.stormtale.game.npc.enemies.Yuka;
 
-public class Scene {
+import java.io.Serializable;
+
+public class Scene implements Serializable {
 
     public static AbstractScene testScene1 = new AbstractScene() {
         @Override
@@ -339,9 +341,9 @@ public class Scene {
                 combat.setColumn(0);
                 combat.setName("Ключ");
                 combat.setType("Combat");
-                Yuka yuka1 = new Yuka();
+                Yuka yuka1 = new Yuka(world.getDifficulty());
                 combat.addEnemy(yuka1);
-                Yuka yuka2 = new Yuka();
+                Yuka yuka2 = new Yuka(world.getDifficulty());
                 combat.addEnemy(yuka2);
                 combat.setNextScene(testScene5);
                 String combatText ="Когда " + world.getMainCharacter().getName()[0]
@@ -413,7 +415,7 @@ public class Scene {
         @Override
         public void setUpScene(World world) {
             setText("Локация 2 комната 1");
-            setMovementButtons(true,testScene22,false,null,false,null,false,null);
+            setMovementButtons(true,Location.testLocation22,false,null,false,null,false,null);
         }
 
         @Override
@@ -426,7 +428,7 @@ public class Scene {
         @Override
         public void setUpScene(World world) {
             setText("Локация 2 комната 2");
-            setMovementButtons(false,null,true,testScene21,false,null,false,null);
+            setMovementButtons(false,null,true,Location.testLocation21,false,null,false,null);
         }
 
         @Override
@@ -510,7 +512,7 @@ public class Scene {
                     "цветами и невзрачными травками, использующимися в ворожбе. Справа — беседка, нависающая над небольшим прудиком. " +
             "Само поместье выглядит изящным и возвышенным, в самый раз утонченному столичному служащему.";
             setText(text);
-            setMovementButtons(false,null,true,RichStreet1,false,null,false,null);
+            setMovementButtons(false,null,true,Location.RichStreet1,false,null,false,null);
         }
 
         @Override
@@ -525,7 +527,7 @@ public class Scene {
             setText(world.getMainCharacter().getName()[0] + " идет по широкой улице, мощеной узорчатым камнем. По обеим сторонам высятся яркие, " +
                     "искусно разукрашенные дома. Туда-сюда спешат слуги в добротных одеждах, степенно прогуливаются знатные господа, " +
                     "прикрываясь от солнца цветными зонтиками.");
-            setMovementButtons(true,ScholarHome,false,null,true,RichStreet2,false,null);
+            setMovementButtons(true,Location.ScholarHome,false,null,true,Location.RichStreet2,false,null);
         }
 
         @Override
@@ -540,7 +542,7 @@ public class Scene {
             setText(world.getMainCharacter().getName()[0] + " идет по широкой улице, мощеной узорчатым камнем. По обеим сторонам высятся яркие, " +
                     "искусно разукрашенные дома. Туда-сюда спешат слуги в добротных одеждах, степенно прогуливаются знатные господа, " +
                     "прикрываясь от солнца цветными зонтиками.");
-            setMovementButtons(false,null,false,null,true,RichStreet3,true,RichStreet1);
+            setMovementButtons(false,null,false,null,true,Location.RichStreet3,true,Location.RichStreet1);
         }
 
         @Override
@@ -555,7 +557,7 @@ public class Scene {
             setText(world.getMainCharacter().getName()[0] + " идет по широкой улице, мощеной узорчатым камнем. По обеим сторонам высятся яркие, " +
                     "искусно разукрашенные дома. Туда-сюда спешат слуги в добротных одеждах, степенно прогуливаются знатные господа, " +
                     "прикрываясь от солнца цветными зонтиками.");
-            setMovementButtons(false,null,true,Pier1,false,null,true,RichStreet2);
+            setMovementButtons(false,null,true,Location.Pier1,false,null,true,Location.RichStreet2);
         }
 
         @Override
@@ -570,7 +572,7 @@ public class Scene {
             setText(world.getMainCharacter().getName()[0] + " идет вдоль многочисленных причалов. Волны лениво бьются о берег, " +
                     "слышны крики матросов, загружающих что-то на корабль — или может, выгружающих? Сложно понять. " +
                     "Оглушительно несет рыбой от разложенных неподалеку рыбацких прилавков.");
-            setMovementButtons(true,RichStreet3,true,Pier2,false,null,false,null);
+            setMovementButtons(true,Location.RichStreet3,true,Location.Pier2,false,null,false,null);
         }
 
         @Override
@@ -585,7 +587,7 @@ public class Scene {
             setText(world.getMainCharacter().getName()[0] + " идет вдоль многочисленных причалов. Волны лениво бьются о берег, " +
                     "слышны крики матросов, загружающих что-то на корабль — или может, выгружающих? Сложно понять. " +
                     "Оглушительно несет рыбой от разложенных неподалеку рыбацких прилавков.");
-            setMovementButtons(true,Pier1,false,null,false,null,false,null);
+            setMovementButtons(true,Location.Pier1,false,null,false,null,false,null);
         }
 
         @Override

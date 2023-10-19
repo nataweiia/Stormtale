@@ -2,13 +2,9 @@ package com.stormtale.stormtale.Controllers;
 
 import com.stormtale.stormtale.game.*;
 import com.stormtale.stormtale.game.combat.*;
-import com.stormtale.stormtale.game.inventory.AbstractItem;
+import com.stormtale.stormtale.game.inventory.*;
 import com.stormtale.stormtale.World;
-import com.stormtale.stormtale.game.inventory.Consumable;
-import com.stormtale.stormtale.game.inventory.Equipment;
-import com.stormtale.stormtale.game.inventory.Weapon;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
-import com.stormtale.stormtale.game.npc.enemies.Yuka;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -30,7 +26,6 @@ import java.util.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -316,11 +311,15 @@ public class MainController implements Initializable{
         addText("Все враги повержены!");
         world.getMainCharacter().addExp(combat.getTotalExpReward());
         addText("\n\nВы получаете " + combat.getTotalExpReward() + " опыта!");
+        ArrayList<AbstractItem> extraLoot = new ArrayList<>();
         for (AbstractItem item: combat.getLoot()
              ) {
-            addText("\nВы получаете " + item.getName() + ".");
-            world.getMainCharacter().addItem(item);
-            //possible place for out of capacity dialogue
+            if (world.getMainCharacter().getInventory().size() < world.getMainCharacter().getMaxInventory()) {
+                addText("\nВы получаете " + item.getName() + ".");
+                world.getMainCharacter().addItem(item);
+            } else {
+                extraLoot.add(item);
+            }
         }
         LeftBox.getChildren().clear();
         RightBox.getChildren().clear();
@@ -329,7 +328,7 @@ public class MainController implements Initializable{
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                checkForLevelUp(combat.getNextScene());
+                checkForLevelUp(combat.getNextScene(),extraLoot);
             }
         });
     }
@@ -473,23 +472,12 @@ public class MainController implements Initializable{
         clearMainText();
         clearButtons();
         drawMap();
-        Button inventory = new Button();
-        setButton(inventory,"Инвентарь",2,4);
-        inventory.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                displayInventory(world.getMainCharacter().getInventory());
-            }
-        });
         ArrayList<ButtonInfo> buttons = world.getCurrentButtons();
-        //add map change here
-        //show profiles maybe? think about it
         addText(world.getCurrentSceneText());
         for (Integer i = 0; i < buttons.size(); i++) {
             Button button = new Button();
             ButtonInfo buttonInfo = buttons.get(i);
             if (buttonInfo.getAvailability()) {
-                //everything goes here
                 if (buttonInfo.getTooltip() != null) {
                     setButtonHover(button,buttonInfo.getName(),buttonInfo.getTooltip(),buttonInfo.getRow(),buttonInfo.getColumn());
                 } else {
@@ -499,18 +487,20 @@ public class MainController implements Initializable{
                     case "Item":
                         button.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
-                            public void handle(ActionEvent actionEvent) { //change later to "name" gains
-                                String text = "\nВы получаете " + buttonInfo.getItem().getName() + ".";
-                                addText(text);
-                                world.setCurrentSceneText(world.getCurrentSceneText() + text);
-                                world.getMainCharacter().addItem(buttonInfo.getItem());
-                                if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
-                                //do smth with saves here, idk
-                                //maybe keep all scenes in world?
-                                //check with world if already taken or smth
-                                //world.getMainCharacter().addItem(buttonInfo.getItem());
-                                buttons.remove(buttonInfo);
-                                ButtonGrid.getChildren().remove(button);
+                            public void handle(ActionEvent actionEvent) {
+                                if (world.getMainCharacter().getInventory().size() < world.getMainCharacter().getMaxInventory()) {
+                                    String text = "\nВы получаете " + buttonInfo.getItem().getName() + ".";
+                                    addText(text);
+                                    world.setCurrentSceneText(world.getCurrentSceneText() + text);
+                                    world.getMainCharacter().addItem(buttonInfo.getItem());
+                                    if (buttonInfo.isFlag()) world.getCurrentScene().changeFlag(world);
+                                    buttons.remove(buttonInfo);
+                                    ButtonGrid.getChildren().remove(button);
+                                } else {
+                                    ArrayList<AbstractItem> item = new ArrayList<>();
+                                    item.add(buttonInfo.getItem());
+                                    fullInventory(item);
+                                }
                             }
                         });
                         break;
@@ -558,7 +548,16 @@ public class MainController implements Initializable{
                                 Random r = new Random();
                                 int time = r.nextInt(6) + 3;
                                 world.addTime(time);
-                                nextScene(buttonInfo.getNextScene());
+                                world.getMainCharacter().addHealth(time / 2);
+                                nextScene(buttonInfo.getNewLocation().getScene());
+                            }
+                        });
+                        break;
+                    case "Trade":
+                        button.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                tradeChoice(buttonInfo.getNpc());
                             }
                         });
                         break;
@@ -566,6 +565,202 @@ public class MainController implements Initializable{
             } else {
                 setDisabledButton(button,buttonInfo.getName(),buttonInfo.getRow(),buttonInfo.getColumn());
             }
+        }
+    }
+
+    private void tradeChoice (AbstractNPC npc) {
+        clearMainText();
+        clearButtons();
+        addText("Вы хотите продать или купить предметы?");
+        Button sell = new Button();
+        if (world.getMainCharacter().getInventory() != null) {
+            setButton(sell,"Продать",0,0);
+            sell.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    tradeSell();
+                }
+            });
+        } else {
+            setDisabledButton(sell,"Продать",0,0);
+        }
+        Button buy = new Button();
+        if (world.getMainCharacter().getInventory().size() < world.getMainCharacter().getMaxInventory()) {
+            setButton(buy,"Купить",0,1);
+            buy.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    tradeBuy(npc);
+                }
+            });
+        } else {
+            setDisabledButton(buy,"Купить",0,1);
+        }
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
+            }
+        });
+    }
+
+    private void tradeSell () {
+        clearMainText();
+        clearButtons();
+        addText("Выберите предметы, которые вы хотели бы продать.\n\n");
+        addText("Наведите курсор на предмет, чтобы увидеть его стоимость.\n\n");
+        addText("Предметы со стоимостью равной 0 не могут быть проданы.\n\n\n\n");
+        displayRowForSelling(world.getMainCharacter().getInventory(),0);
+        Button forward = new Button();
+        setDisabledButton(forward,">>",1,4);
+        Button backward = new Button();
+        setDisabledButton(backward,"<<",1,3);
+        if (world.getMainCharacter().getInventory().size() > 5) {
+            final int[] n = {0};
+            forward.setDisable(false);
+            forward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] + 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForSelling(world.getMainCharacter().getInventory(),n[0]);
+                    if (n[0] + 5 > world.getMainCharacter().getInventory().size()) forward.setDisable(true);
+                    backward.setDisable(false);
+                }
+            });
+            backward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] - 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForSelling(world.getMainCharacter().getInventory(),n[0]);
+                    if (n[0] - 5 < 0) backward.setDisable(true);
+                    forward.setDisable(false);
+                }
+            });
+        }
+
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
+            }
+        });
+    }
+
+    private void displayRowForSelling (ArrayList<AbstractItem> inventory, Integer startingPoint) {
+        int endingPoint;
+        if (startingPoint + 4 > inventory.size()) endingPoint = inventory.size() - startingPoint;
+        else endingPoint = 4;
+        ArrayList<AbstractItem> row = new ArrayList<>();
+        for (int j = 0; j < endingPoint; j++){
+            row.add(inventory.get(startingPoint + j));
+        }
+        int i = 0;
+        for (AbstractItem item: row
+        ) {
+            Button button = new Button();
+            Integer money = inventory.get(i).getValue() / 2;
+            String value = "Стоимость: " + money;
+            if (inventory.get(i).getValue() == 0) {
+                setDisabledButton(button,inventory.get(i).getName(),0,i);
+            } else {
+                setButtonHover(button, inventory.get(i).getName(), value, 0, i);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        inventory.remove(item);
+                        world.getMainCharacter().addMoney(money);
+                        tradeSell();
+                    }
+                });
+            }
+            i++;
+        }
+    }
+
+    private void tradeBuy (AbstractNPC npc) {
+        clearMainText();
+        clearButtons();
+        addText("Выберите предметы, которые хотите купить.\n\n");
+        addText("Вы не можете покупать предметы, если у вас недостаточно денег.\n\n");
+        addText("Наведите курсор на предмет, чтобы увидеть стоимость.");
+        displayRowForBuying(npc.getInventory(),0,npc);
+        Button forward = new Button();
+        setDisabledButton(forward,">>",1,4);
+        Button backward = new Button();
+        setDisabledButton(backward,"<<",1,3);
+        if (npc.getInventory().size() > 5) {
+            final int[] n = {0};
+            forward.setDisable(false);
+            forward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] + 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForBuying(npc.getInventory(),n[0],npc);
+                    if (n[0] + 5 > npc.getInventory().size()) forward.setDisable(true);
+                    backward.setDisable(false);
+                }
+            });
+            backward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] - 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForBuying(npc.getInventory(),n[0],npc);
+                    if (n[0] - 5 < 0) backward.setDisable(true);
+                    forward.setDisable(false);
+                }
+            });
+        }
+
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
+            }
+        });
+    }
+
+    private  void displayRowForBuying (ArrayList<AbstractItem> inventory, Integer startingPoint, AbstractNPC npc) {
+        int endingPoint;
+        if (startingPoint + 4 > inventory.size()) endingPoint = inventory.size() - startingPoint;
+        else endingPoint = 4;
+        ArrayList<AbstractItem> row = new ArrayList<>();
+        for (int j = 0; j < endingPoint; j++){
+            row.add(inventory.get(startingPoint + j));
+        }
+        int i = 0;
+        for (AbstractItem item: row
+        ) {
+            Button button = new Button();
+            Integer money = inventory.get(i).getValue();
+            String value = "Стоимость: " + money;
+            if (world.getMainCharacter().getMoney() < money) {
+                setDisabledButton(button,inventory.get(i).getName(),0,i);
+            } else {
+                setButtonHover(button, inventory.get(i).getName(), value, 0, i);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        world.getMainCharacter().removeMoney(money);
+                        world.getMainCharacter().addItem(item);
+                        if (world.getMainCharacter().getInventory().size() == world.getMainCharacter().getMaxInventory()) {
+                            displayCurrentScene();
+                        } else {
+                            tradeBuy(npc);
+                        }
+                    }
+                });
+            }
+            i++;
         }
     }
 
@@ -648,33 +843,80 @@ public class MainController implements Initializable{
                             showButtons();
                         }
                     });
-                    if (item instanceof Weapon) {
+                    if (item instanceof AbstractWeapon) {
                         Button equipWeapon = new Button();
-                        setButton(equipWeapon,"Надеть",0,1);
-                        equipWeapon.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                //world.getMainCharacter.equipWeapon()
-                                //also check if able to equip?
-                                //equip to companion?
-                                inventory.remove(item);
-                                displayInventory(inventory);
+                        if (world.getMainCharacter().getAvailableWeaponTypes().contains(((AbstractWeapon) item).getWeaponType())){
+                            setButton(equipWeapon,"Надеть",0,1);
+                            equipWeapon.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    world.getMainCharacter().addItem(world.getMainCharacter().getWeapon());
+                                    world.getMainCharacter().setWeapon((AbstractWeapon)item);
+                                    ((AbstractWeapon) item).equip(world.getMainCharacter());
+                                    inventory.remove(item);
+                                    displayInventory(inventory);
+                                }
+                            });
+                        } else {
+                            setDisabledButton(equipWeapon,"Надеть",0,1);
+                        }
+                        if (!world.getCompanions().isEmpty()) {
+                            int i = 2;
+                            for (Companion companion: world.getCompanions()
+                            ) {
+                                Button equipCompanion = new Button();
+                                if (companion.getAvailableWeaponTypes().contains(((AbstractWeapon) item).getWeaponType())){
+                                    setButton(equipCompanion,companion.getName()[0],0,i);
+                                    equipCompanion.setOnAction(new EventHandler<ActionEvent>() {
+                                        @Override
+                                        public void handle(ActionEvent actionEvent) {
+                                            world.getMainCharacter().addItem(companion.getWeapon());
+                                            companion.setWeapon((AbstractWeapon)item);
+                                            ((AbstractWeapon) item).equip(companion);
+                                            inventory.remove(item);
+                                            displayInventory(inventory);
+                                        }
+                                    });
+                                } else {
+                                    setDisabledButton(equipCompanion,companion.getName()[0],0,i);
+                                }
+                                i++;
                             }
-                        });
+                        }
                     }
-                    if (item instanceof Equipment) {
+                    if (item instanceof AbstractEquipment) {
                         Button equip = new Button();
-                        setButton(equip,"Надеть",0,1);
-                        equip.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                //world.getMainCharacter.equip()
-                                //also check if able to equip?
-                                //equip to companion?
-                                inventory.remove(item);
-                                displayInventory(inventory);
-                            }
-                        });
+                        if (((AbstractEquipment) item).getArmorType() == world.getMainCharacter().getArmorType()) {
+                            setButton(equip,"Надеть",0,1);
+                            equip.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                    if (((AbstractEquipment) item).getArmorSlot() == "Голова") {
+                                        inventory.add(world.getMainCharacter().getHead());
+                                        world.getMainCharacter().setHead((AbstractEquipment) item);
+                                        ((AbstractEquipment) item).equip(world.getMainCharacter());
+                                        inventory.remove(item);
+                                        displayInventory(inventory);
+                                    } else if (((AbstractEquipment) item).getArmorSlot() == "Тело") {
+                                        inventory.add(world.getMainCharacter().getBody());
+                                        world.getMainCharacter().setBody((AbstractEquipment) item);
+                                        ((AbstractEquipment) item).equip(world.getMainCharacter());
+                                        inventory.remove(item);
+                                        displayInventory(inventory);
+                                    } else {
+                                        inventory.add(world.getMainCharacter().getAccessory());
+                                        world.getMainCharacter().setAccessory((AbstractEquipment) item);
+                                        ((AbstractEquipment) item).equip(world.getMainCharacter());
+                                        inventory.remove(item);
+                                        displayInventory(inventory);
+                                    }
+                                }
+                            });
+                        } else {
+                            setDisabledButton(equip,"Надеть",0,1);
+                        }
+
                     }
                     if (item instanceof Consumable) {
                         Button consume = new Button();
@@ -694,13 +936,95 @@ public class MainController implements Initializable{
         }
     }
 
+    private void fullInventory(ArrayList<AbstractItem> items) {
+        clearMainText();
+        clearButtons();
+        addText("Вы попытались получить предмет " + items.get(0).getName() +
+                ", однако ваш инвентарь полон! Чтобы получить новый предмет, требуется выбросить один из уже имеющихся.\n\nКакой предмет вы хотели бы выбросить?");
+        displayRowForDiscarding(world.getMainCharacter().getInventory(),0,items);
+        Button forward = new Button();
+        setDisabledButton(forward,">>",1,4);
+        Button backward = new Button();
+        setDisabledButton(backward,"<<",1,3);
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractItem item = items.get(0);
+                items.remove(item);
+                if (items.isEmpty()){
+                    displayCurrentScene();
+                } else {
+                    fullInventory(items);
+                }
+            }
+        });
+        if (world.getMainCharacter().getInventory().size() > 5) {
+            final int[] n = {0};
+            forward.setDisable(false);
+            forward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] + 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForDiscarding(world.getMainCharacter().getInventory(),n[0],items);
+                    if (n[0] + 5 > world.getMainCharacter().getInventory().size()) forward.setDisable(true);
+                    backward.setDisable(false);
+                }
+            });
+            backward.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    n[0] = n[0] - 5;
+                    ButtonGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == 0);
+                    displayRowForDiscarding(world.getMainCharacter().getInventory(),n[0],items);
+                    if (n[0] - 5 < 0) backward.setDisable(true);
+                    forward.setDisable(false);
+                }
+            });
+        }
+    }
+
+    private void displayRowForDiscarding(ArrayList<AbstractItem> inventory, Integer startingPoint, ArrayList<AbstractItem> items) {
+        int endingPoint;
+        if (startingPoint + 4 > inventory.size()) endingPoint = inventory.size() - startingPoint;
+        else endingPoint = 4;
+        ArrayList<AbstractItem> row = new ArrayList<>();
+        for (int j = 0; j < endingPoint; j++){
+            row.add(inventory.get(startingPoint + j));
+        }
+        int i = 0;
+        for (AbstractItem item: row
+        ) {
+            Button button = new Button();
+            setButtonHover(button, inventory.get(i).getName(), inventory.get(i).getDescription(), 0, i);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    inventory.remove(item);
+                    AbstractItem newItem = items.get(0);
+                    items.remove(newItem);
+                    inventory.add(newItem);
+                    if (items.isEmpty()){
+                        displayCurrentScene();
+                    } else {
+                        fullInventory(items);
+                    }
+                }
+            });
+            i++;
+        }
+    }
+
     private void displayMCProfile() {
         clearMainText();
         clearButtons();
-        addText(world.getMainCharacter().getName()[0] + world.getMainCharacter().getCharacterClass() + "\n\n" + world.getMainCharacter().description() +
+        addText(world.getMainCharacter().getName()[0] + "\n" +
+                world.getMainCharacter().getCharacterClass() + "\n\n" + world.getMainCharacter().description() +
                 "\n\n Здоровье: " + world.getMainCharacter().getCurrentHealth() + "/" + world.getMainCharacter().getMaxHealth() +
                 "\n" + world.getMainCharacter().getResourceType() + ": " + world.getMainCharacter().getCurrentResource() + "/" + world.getMainCharacter().getMaxResource() +
-                "\nБроня: " + world.getMainCharacter().getArmor() +
+                "\nЗащита: " + world.getMainCharacter().getProtection() +
                 "\n\nСила: " + world.getMainCharacter().getStrength() +
                 "\nЛовкость: " + world.getMainCharacter().getDexterity() +
                 "\nРазум: " + world.getMainCharacter().getMind() +
@@ -757,7 +1081,7 @@ public class MainController implements Initializable{
             addText("\n\n");
         }
         Button mcprofile = new Button();
-        setDisabledButton(mcprofile,"Профиль",0,0);
+        setButton(mcprofile,"Профиль",0,0);
         mcprofile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -783,6 +1107,14 @@ public class MainController implements Initializable{
                 i++;
             }
         }
+        Button back = new Button();
+        setButton(back,"Назад",2,4);
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                displayCurrentScene();
+            }
+        });
     }
 
     private void displayCompanionProfile(Companion companion){
@@ -791,7 +1123,7 @@ public class MainController implements Initializable{
         addText(companion.getName()[0] + "\n" + companion.getCharacterClass() + "\n\n" + companion.description() +
                 "\n\n Здоровье: " + companion.getCurrentHealth() + "/" + companion.getMaxHealth() +
                 "\n" + companion.getResourceType() + ": " + companion.getCurrentResource() + "/" + companion.getMaxResource() +
-                "\nБроня: " + companion.getArmor() +
+                "\nБроня: " + companion.getProtection() +
                 "\n\nСила: " + companion.getStrength() +
                 "\nЛовкость: " + companion.getDexterity() +
                 "\nРазум: " + companion.getMind() +
@@ -896,13 +1228,13 @@ public class MainController implements Initializable{
                 stage.setId("Struck");
                 questBox.getChildren().add(stage);
             }
-            Label currentStage = new Label(world.getCurrentQuests().get(i).getCurrentStage()[1] + "\n\n");
+            Label currentStage = new Label(world.getCurrentQuests().get(i).getCurrentStage()[0] + "\n\n");
             questBox.getChildren().add(currentStage);
             quests.add(questBox,0,i);
             VBox descriptionBox = new VBox();
             descriptionBox.setId("QuestMenu");
             descriptionBox.setPadding(new Insets(5, 5, 5, 5));
-            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[2]);
+            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[1]);
             descriptionBox.getChildren().add(description);
             quests.add(descriptionBox,1,i);
         }
@@ -945,14 +1277,14 @@ public class MainController implements Initializable{
                 stage.setId("Struck");
                 questBox.getChildren().add(stage);
             }
-            Label currentStage = new Label(world.getCompletedQuests().get(i).getCurrentStage()[1] + "\n\n");
+            Label currentStage = new Label(world.getCompletedQuests().get(i).getCurrentStage()[0] + "\n\n");
             currentStage.setId("Struck");
             questBox.getChildren().add(currentStage);
             quests.add(questBox,0,i);
             VBox descriptionBox = new VBox();
             descriptionBox.setId("QuestMenu");
             descriptionBox.setPadding(new Insets(5, 5, 5, 5));
-            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[2]);
+            Label description = new Label(world.getCurrentQuests().get(i).getCurrentStage()[1]);
             descriptionBox.getChildren().add(description);
             quests.add(descriptionBox,1,i);
         }
@@ -1019,7 +1351,7 @@ public class MainController implements Initializable{
                     FileInputStream fileIn = new FileInputStream(filePath);
                     ObjectInputStream in = new ObjectInputStream(fileIn);
                     World tempWorld = (World) in.readObject();
-                    name.setText(tempWorld.getCurrentLocation().getName());
+                    name.setText(tempWorld.getCurrentLocation().getName() + ", " + world.getTime());
                     in.close();
                     fileIn.close();
                 } catch (IOException | ClassNotFoundException c) {
@@ -1069,7 +1401,7 @@ public class MainController implements Initializable{
                         LoadButton.setDisable(false);
                         DeleteButton.setDisable(false);
                     }
-                    name.setText(world.getCurrentLocation().getName());
+                    name.setText(world.getCurrentLocation().getName() + ", " + world.getTime());
                 }
             });
             LoadButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -1231,6 +1563,14 @@ public class MainController implements Initializable{
                 clearMainText();
                 clearButtons();
                 mc.setCharacterClass("Ученый");
+                mc.setWeapon(Weapon.ScholarStartingWeapon);
+                Weapon.ScholarStartingWeapon.equip(mc);
+                mc.setHead(Equipment.ScholarStartingHead);
+                Equipment.ScholarStartingHead.equip(mc);
+                mc.setBody(Equipment.ScholarStartingBody);
+                Equipment.ScholarStartingBody.equip(mc);
+                mc.setAccessory(Equipment.ScholarStartingAccessory);
+                Equipment.ScholarStartingAccessory.equip(mc);
                 chooseStats(mc);
             }
         });
@@ -1247,7 +1587,7 @@ public class MainController implements Initializable{
     private void chooseStats (MainCharacter mc) {
         clearMainText();
         clearButtons();
-        addText("Распределите характеристики:\n\n"); //elaborate here
+        addText("Распределите характеристики:\n");
         Button cont = new Button();
         setButton(cont,"Далее",0,0);
         cont.setOnAction(new EventHandler<ActionEvent>() {
@@ -1447,6 +1787,10 @@ public class MainController implements Initializable{
                 ccount.setText(Integer.toString(mc.getCharisma()));
             }
         });
+        addText("\nСила: ваша способность влиять на мир могучестью ваших рук. Отвечает за физический урон способностями и оружием.\n\n");
+        addText("Ловкость: ваша способность избегать влияния мира на вас. Отвечает за величину параметра Защита, снижающего получаемый вами урон.\n\n");
+        addText("Разум: ваша способность понимать мир и находить в нем наиболее оптимальные пути. Отвечает за величину вашего запаса классового ресурса, расходуемого на умения.\n\n");
+        addText("Харизма: ваша способность влиять на мир вашей волей. Отвечает за магический урон способностями и оружием.");
 
     }
 
@@ -1682,7 +2026,7 @@ public class MainController implements Initializable{
         box.getChildren().add(profilePane);
     }
 
-    private void checkForLevelUp(AbstractScene nextScene) {
+    private void checkForLevelUp(AbstractScene nextScene, ArrayList<AbstractItem> extraLoot) {
         if (world.getMainCharacter().getLevel() < 6 && world.getMainCharacter().getExp() >= world.getMainCharacter().getMaxExp()) {
             world.getMainCharacter().addLevel(1);
             Integer newExp = world.getMainCharacter().getExp() - world.getMainCharacter().getMaxExp();
@@ -1692,16 +2036,26 @@ public class MainController implements Initializable{
             addText("Вы достигли уровня" + world.getMainCharacter().getLevel() + "!");
             addText("\nВы получаете следующие преимущества:");
             addText(world.getMainCharacter().levelUp());
-            //if companions level up, add their things here also
             Button button = new Button();
             setButton(button,"Далее",0,0);
             button.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    checkForLevelUp(nextScene);
+                    checkForLevelUp(nextScene,extraLoot);
                 }
             });
-        } else nextScene(nextScene);
+        } else {
+            nextScene.setUpScene(world);
+            world.setCurrentScene(nextScene);
+            world.setCurrentSceneText(nextScene.getText());
+            world.setCurrentLocation(nextScene.getLocation());
+            world.setCurrentButtons(nextScene.getButtons());
+            if (extraLoot.isEmpty()) {
+                displayCurrentScene();
+            } else {
+                fullInventory(extraLoot);
+            }
+        }
     }
 
     private void drawMap() {

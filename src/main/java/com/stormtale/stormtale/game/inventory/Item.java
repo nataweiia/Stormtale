@@ -3,9 +3,10 @@ package com.stormtale.stormtale.game.inventory;
 import com.stormtale.stormtale.game.MainCharacter;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Item {
+public class Item implements Serializable {
 
     public static AbstractItem testBerry = new AbstractItem("Ягода","Боевой","Светящаяся ягода. Восстанавливает силы при использовании.","Common") {
         @Override

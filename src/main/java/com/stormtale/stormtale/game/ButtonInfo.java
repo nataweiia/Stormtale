@@ -3,9 +3,10 @@ package com.stormtale.stormtale.game;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ButtonInfo {
+public class ButtonInfo implements Serializable {
     enum Type {
         Combat, Item, Movement, Continue
     }

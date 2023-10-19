@@ -1,8 +1,8 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.game.combat.Ability;
-import com.stormtale.stormtale.game.inventory.AbstractItem;
-import com.stormtale.stormtale.game.inventory.Equipment;
+import com.stormtale.stormtale.game.inventory.AbstractEquipment;
+import com.stormtale.stormtale.game.inventory.AbstractWeapon;
 import com.stormtale.stormtale.game.inventory.Weapon;
 
 import java.io.Serializable;
@@ -14,15 +14,15 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
 
     Integer maxExp;
 
-    Integer money;
+    AbstractWeapon weapon;
+    ArrayList<String> availableWeaponTypes = new ArrayList<>();
 
-    ArrayList<AbstractItem> inventory = new ArrayList<>();
+    String armorType;
+    AbstractEquipment head;
+    AbstractEquipment body;
+    AbstractEquipment accessory;
 
-    Weapon weapon;
-    ArrayList<String> availableWeaponTypes;
-    Equipment head;
-    Equipment body;
-    Equipment accessory;
+    Integer maxInventory;
 
     public MainCharacter () {
         name[0] = "Неизвестно";
@@ -38,13 +38,14 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 dexterity = 3;
                 mind = 1;
                 charisma = 2;
-                setMaxHealth(20); //delete later
+                addAbility(Ability.Thrust);
+                setMaxHealth(20);
                 setCurrentHealth(20);
                 setMaxResource(10);
                 setCurrentResource(10);
                 setExp(0);
                 setMaxExp(10);
-                addAbility(Ability.Punch);
+                armorType = "Тяжелая";
                 break;
             case "Ученый":
                 resourceType = "Мана";
@@ -52,13 +53,15 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 dexterity = 2;
                 mind = 4;
                 charisma = 3;
-                setMaxHealth(20);
-                setCurrentHealth(20);
-                setMaxResource(10);
-                setCurrentResource(10);
+                addAbility(Ability.Flare);
+                setMaxHealth(40);
+                setCurrentHealth(40);
+                setMaxResource(20);
+                setCurrentResource(20);
                 setExp(0);
                 setMaxExp(10);
-                addAbility(Ability.Spark);
+                availableWeaponTypes.add("Фокусировка");
+                armorType = "Легкая";
                 break;
             case "Прохиндей":
                 resourceType = "Выносливость";
@@ -66,13 +69,14 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 dexterity = 4;
                 mind = 2;
                 charisma = 3;
+                addAbility(Ability.Undercut);
                 setMaxHealth(20);
                 setCurrentHealth(20);
                 setMaxResource(10);
                 setCurrentResource(10);
                 setExp(0);
                 setMaxExp(10);
-                addAbility(Ability.Trick);
+                armorType = "Средняя";
                 break;
         }
         //add abilities, stats, etc
@@ -137,39 +141,11 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
         this.exp = this.exp + exp;
     }
 
-    public Integer getMoney() {
-        return money;
-    }
-
-    public void setMoney(Integer money) {
-        this.money = money;
-    }
-
-    public void addMoney(Integer money) {
-        this.money = this.money + money;
-    }
-
-    public void setInventory(ArrayList<AbstractItem> inventory) {
-        this.inventory = inventory;
-    }
-
-    public ArrayList<AbstractItem> getInventory() {
-        return inventory;
-    }
-
-    public void addItem(AbstractItem item) {
-        inventory.add(item);
-    }
-
-    public void removeItem(AbstractItem item) {
-        inventory.remove(item);
-    }
-
-    public void setWeapon(Weapon weapon) {
+    public void setWeapon(AbstractWeapon weapon) {
         this.weapon = weapon;
     }
 
-    public Weapon getWeapon() {
+    public AbstractWeapon getWeapon() {
         return weapon;
     }
 
@@ -181,27 +157,39 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
         return availableWeaponTypes;
     }
 
-    public void setAccessory(Equipment accessory) {
+    public String getArmorType() {
+        return armorType;
+    }
+
+    public void setAccessory(AbstractEquipment accessory) {
         this.accessory = accessory;
     }
 
-    public void setBody(Equipment body) {
+    public void setBody(AbstractEquipment body) {
         this.body = body;
     }
 
-    public void setHead(Equipment head) {
+    public void setHead(AbstractEquipment head) {
         this.head = head;
     }
 
-    public Equipment getAccessory() {
+    public AbstractEquipment getAccessory() {
         return accessory;
     }
 
-    public Equipment getBody() {
+    public AbstractEquipment getBody() {
         return body;
     }
 
-    public Equipment getHead() {
+    public AbstractEquipment getHead() {
         return head;
+    }
+
+    public void setMaxInventory(Integer maxInventory) {
+        this.maxInventory = maxInventory;
+    }
+
+    public Integer getMaxInventory() {
+        return maxInventory;
     }
 }

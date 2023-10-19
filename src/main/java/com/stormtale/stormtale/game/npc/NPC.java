@@ -6,9 +6,10 @@ import com.stormtale.stormtale.game.combat.Ability;
 import com.stormtale.stormtale.game.combat.AbstractAbility;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class NPC {
+public class NPC implements Serializable {
 
     public static AbstractNPC testNPC = new AbstractNPC(new String[]{"Юка", "Юки", "Юке", "Юку", "Юкой", "Юке"},
             true,

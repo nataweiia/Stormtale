@@ -1,13 +1,13 @@
 package com.stormtale.stormtale.game;
 
 import com.stormtale.stormtale.World;
-import com.stormtale.stormtale.game.combat.AbstractAbility;
 import com.stormtale.stormtale.game.inventory.AbstractItem;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractScene {
+public abstract class AbstractScene implements Serializable {
     private String text;
     private ArrayList<ButtonInfo> buttons = new ArrayList<>();
     private AbstractLocation location;
@@ -37,14 +37,13 @@ public abstract class AbstractScene {
         buttons.add(button);
     }
 
-    public void setItemButton(AbstractScene nextScene, Integer row, Integer column, String name, AbstractItem item) {
+    public void setItemButton(Integer row, Integer column, String name, AbstractItem item, Boolean isFlag) {
         ButtonInfo button = new ButtonInfo();
         button.setRow(row);
         button.setColumn(column);
         button.setType("Item");
         button.setName(name);
-        button.setNextScene(nextScene);
-        button.setFlag(true);
+        button.setFlag(isFlag);
         button.setItem(item);
         buttons.add(button);
     }
@@ -60,17 +59,15 @@ public abstract class AbstractScene {
         button.getEnemies().addAll(enemies);
         buttons.add(button);
     }
-
-    public void setMovementButtons (Boolean availTop, AbstractScene nextTop, Boolean availBottom, AbstractScene nextBottom,
-                                    Boolean availLeft, AbstractScene nextLeft, Boolean availRight, AbstractScene nextRight) {
+    public void setMovementButtons(Boolean availTop, AbstractLocation nextTop, Boolean availBottom, AbstractLocation nextBottom,
+                                   Boolean availLeft, AbstractLocation nextLeft, Boolean availRight, AbstractLocation nextRight) {
         ButtonInfo top = new ButtonInfo();
         top.setRow(1);
         top.setColumn(1);
         top.setName("Вперед");
         if (availTop) {
-            top.setNextScene(nextTop);
+            top.setNewLocation(nextTop);
             top.setType("Movement");
-            top.setNewLocation(nextTop.getLocation());
         } else top.setAvailability(false);
         buttons.add(top);
         ButtonInfo bottom = new ButtonInfo();
@@ -78,9 +75,8 @@ public abstract class AbstractScene {
         bottom.setColumn(1);
         bottom.setName("Назад");
         if (availBottom) {
-            bottom.setNextScene(nextBottom);
+            bottom.setNewLocation(nextBottom);
             bottom.setType("Movement");
-            bottom.setNewLocation(nextBottom.getLocation());
         } else bottom.setAvailability(false);
         buttons.add(bottom);
         ButtonInfo left = new ButtonInfo();
@@ -88,9 +84,8 @@ public abstract class AbstractScene {
         left.setColumn(0);
         left.setName("Влево");
         if (availLeft) {
-            left.setNextScene(nextLeft);
+            left.setNewLocation(nextLeft);
             left.setType("Movement");
-            left.setNewLocation(nextLeft.getLocation());
         } else left.setAvailability(false);
         buttons.add(left);
         ButtonInfo right = new ButtonInfo();
@@ -98,11 +93,20 @@ public abstract class AbstractScene {
         right.setColumn(2);
         right.setName("Вправо");
         if (availRight) {
-            right.setNextScene(nextRight);
+            right.setNewLocation(nextRight);
             right.setType("Movement");
-            right.setNewLocation(nextRight.getLocation());
         } else right.setAvailability(false);
         buttons.add(right);
+    }
+
+    public void setTradeButton(Integer row, Integer column, String name, AbstractNPC npc){
+        ButtonInfo button = new ButtonInfo();
+        button.setRow(row);
+        button.setColumn(column);
+        button.setType("Trade");
+        button.setName(name);
+        button.setNpc(npc);
+        buttons.add(button);
     }
 
     public void setText(String text) {

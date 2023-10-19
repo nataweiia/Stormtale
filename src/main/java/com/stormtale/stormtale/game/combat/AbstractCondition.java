@@ -2,7 +2,9 @@ package com.stormtale.stormtale.game.combat;
 
 import com.stormtale.stormtale.game.AbstractCharacter;
 
-public abstract class AbstractCondition {
+import java.io.Serializable;
+
+public abstract class AbstractCondition implements Serializable {
     String name;
     String description;
     Integer duration;

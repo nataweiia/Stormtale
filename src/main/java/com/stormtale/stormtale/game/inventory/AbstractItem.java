@@ -3,9 +3,10 @@ package com.stormtale.stormtale.game.inventory;
 import com.stormtale.stormtale.game.MainCharacter;
 import com.stormtale.stormtale.game.npc.AbstractNPC;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractItem {
+public abstract class AbstractItem implements Serializable {
     String name;
     String type;
     String description;

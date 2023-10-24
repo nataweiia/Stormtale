@@ -37,6 +37,17 @@ public abstract class AbstractScene implements Serializable {
         buttons.add(button);
     }
 
+    public void setButton(AbstractScene nextScene, AbstractLocation location, Integer row, Integer column, String name) {
+        ButtonInfo button = new ButtonInfo();
+        button.setRow(row);
+        button.setColumn(column);
+        button.setType("Continue");
+        button.setName(name);
+        button.setNextScene(nextScene);
+        button.setNewLocation(location);
+        buttons.add(button);
+    }
+
     public void setItemButton(Integer row, Integer column, String name, AbstractItem item, Boolean isFlag) {
         ButtonInfo button = new ButtonInfo();
         button.setRow(row);

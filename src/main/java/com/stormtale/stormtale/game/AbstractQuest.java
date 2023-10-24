@@ -12,7 +12,7 @@ public abstract class AbstractQuest implements Serializable {
     String name;
     Map<Integer,String[]> stages = new HashMap<Integer,String[]>();
 
-    Integer currentStage;
+    Integer currentStage = 1;
 
     List<String> pastStages = new ArrayList<>();
     Integer expReward;
@@ -24,7 +24,6 @@ public abstract class AbstractQuest implements Serializable {
         this.name = name;
         expReward = exp;
         moneyReward = money;
-        currentStage = 1;
     }
 
     public AbstractQuest (String name, Integer exp, Integer money, AbstractItem item) {
@@ -32,7 +31,6 @@ public abstract class AbstractQuest implements Serializable {
         expReward = exp;
         itemReward = item;
         moneyReward = money;
-        currentStage = 1;
     }
 
     public abstract void setStages();
@@ -87,7 +85,7 @@ public abstract class AbstractQuest implements Serializable {
 
     public void nextStage(Integer stage) {
         Integer n = currentStage;
-        pastStages.add(stages.get(n)[1]);
+        pastStages.add(stages.get(n)[0]);
         currentStage = stage;
     }
 

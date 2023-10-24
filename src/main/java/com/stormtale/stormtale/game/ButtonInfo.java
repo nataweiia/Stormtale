@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ButtonInfo implements Serializable {
     enum Type {
-        Combat, Item, Movement, Continue
+        Combat, Item, Movement, Continue, Trade
     }
     private String name;
     private String tooltip;

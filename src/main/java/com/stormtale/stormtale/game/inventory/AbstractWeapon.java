@@ -1,6 +1,6 @@
 package com.stormtale.stormtale.game.inventory;
 
-import com.stormtale.stormtale.game.Companion;
+import com.stormtale.stormtale.game.AbstractCompanion;
 import com.stormtale.stormtale.game.MainCharacter;
 
 import java.io.Serializable;
@@ -24,11 +24,11 @@ public abstract class AbstractWeapon extends AbstractItem implements Serializabl
 
     public abstract void equip (MainCharacter mc);
 
-    public abstract  void equip (Companion companion);
+    public abstract  void equip (AbstractCompanion companion);
 
     public abstract void unequip (MainCharacter mc);
 
-    public abstract void unequip (Companion companion);
+    public abstract void unequip (AbstractCompanion companion);
 
     public int getDmg () {
         Random random = new Random();

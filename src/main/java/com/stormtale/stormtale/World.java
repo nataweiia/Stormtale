@@ -1,7 +1,6 @@
 package com.stormtale.stormtale;
 
 import com.stormtale.stormtale.game.*;
-import javafx.scene.Scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class World implements Serializable {
 
     MainCharacter mainCharacter;
 
-    ArrayList<Companion> companions = new ArrayList<Companion>();
+    ArrayList<AbstractCompanion> companions = new ArrayList<AbstractCompanion>();
 
     AbstractScene currentScene;
 
@@ -42,6 +41,7 @@ public class World implements Serializable {
         currentTime.setCurrentTime(660);
         difficulty = 1.0;
         flags.put("PrologueMission",true);
+        flags.put("HoneyWineAware",false);
     }
 
     public void setCurrentTime(Time time) {
@@ -60,6 +60,13 @@ public class World implements Serializable {
         currentTime.addTime(n);
     }
 
+    public Boolean isDay() {
+        if (currentTime.getTime() > 480 && currentTime.getTime() < 1200) {
+            return true;
+        }
+        else return false;
+    }
+
     public void setCurrentLocation(AbstractLocation location) {
         currentLocation = location;
     }
@@ -76,19 +83,19 @@ public class World implements Serializable {
         return mainCharacter;
     }
 
-    public ArrayList<Companion> getCompanions() {
+    public ArrayList<AbstractCompanion> getCompanions() {
         return companions;
     }
 
-    public void setCompanions(ArrayList<Companion> companions) {
+    public void setCompanions(ArrayList<AbstractCompanion> companions) {
         this.companions = companions;
     }
 
-    public void addCompanion(Companion companion) {
+    public void addCompanion(AbstractCompanion companion) {
         companions.add(companion);
     }
 
-    public void removeCompanion(Companion companion) {
+    public void removeCompanion(AbstractCompanion companion) {
         companions.remove(companion);
     }
 

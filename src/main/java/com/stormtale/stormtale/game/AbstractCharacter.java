@@ -8,6 +8,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -18,11 +20,11 @@ public abstract class AbstractCharacter implements Serializable {
     Integer level;
     Integer maxHealth;
     Integer currentHealth;
-    DoubleProperty healthPercentage = new SimpleDoubleProperty();
+    transient DoubleProperty healthPercentage = new SimpleDoubleProperty();
     String resourceType;
     Integer maxResource;
     Integer currentResource;
-    DoubleProperty resourcePercentage = new SimpleDoubleProperty();
+    transient DoubleProperty resourcePercentage = new SimpleDoubleProperty();
     Integer protection = 0;
 
     Integer strength;
@@ -32,7 +34,9 @@ public abstract class AbstractCharacter implements Serializable {
 
     ArrayList<AbstractAbility> abilities = new ArrayList<>();
     ArrayList<AbstractCondition> conditions = new ArrayList<>();
-    IntegerProperty conditionCount = new SimpleIntegerProperty();
+    transient IntegerProperty conditionCount = new SimpleIntegerProperty();
+
+    Integer conCount;
     Integer money;
 
     ArrayList<AbstractItem> inventory = new ArrayList<>();
@@ -45,6 +49,19 @@ public abstract class AbstractCharacter implements Serializable {
         clearConditions();
     }
 
+    private void initializeProperties() {
+        resourcePercentage = new SimpleDoubleProperty();
+        healthPercentage = new SimpleDoubleProperty();
+        conditionCount = new SimpleIntegerProperty();
+    }
+
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        ois.defaultReadObject();
+        initializeProperties();
+
+    }
+
     public void addAbility (AbstractAbility ability) {
         abilities.add(ability);
     }
@@ -55,16 +72,24 @@ public abstract class AbstractCharacter implements Serializable {
 
     public void addCondition (AbstractCondition condition) {
         conditions.add(condition);
+        conCount = getConditionCount() + 1;
         conditionCount.setValue(getConditionCount() + 1);
     }
 
     public void removeCondition (AbstractCondition condition) {
         conditions.remove(condition);
+        conCount = getConditionCount() - 1;
+        conditionCount.setValue(getConditionCount() - 1);
+    }
+
+    public void countDownConditions() {
+        conCount = getConditionCount() - 1;
         conditionCount.setValue(getConditionCount() - 1);
     }
 
     public void clearConditions () {
         conditions.clear();
+        conCount = 0;
         conditionCount.setValue(0);
     }
 
@@ -129,6 +154,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public Integer getCurrentHealth() {
+        healthPercentage.setValue((double)currentHealth / maxHealth);
         return currentHealth;
     }
 
@@ -146,6 +172,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public double getHealthPercentage() {
+        healthPercentage.setValue((double)currentHealth / maxHealth);
         return healthPercentage.get();
     }
 
@@ -154,6 +181,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public DoubleProperty healthPercentageProperty() {
+        healthPercentage.setValue((double)currentHealth / maxHealth);
         return healthPercentage;
     }
 
@@ -179,6 +207,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public Integer getCurrentResource() {
+        resourcePercentage.setValue((double)currentResource / maxResource);
         return currentResource;
     }
 
@@ -195,6 +224,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public double getResourcePercentage() {
+        resourcePercentage.setValue((double)currentResource / maxResource);
         return resourcePercentage.get();
     }
 
@@ -203,6 +233,7 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public DoubleProperty resourcePercentageProperty() {
+        resourcePercentage.setValue((double)currentResource / maxResource);
         return resourcePercentage;
     }
 
@@ -268,7 +299,7 @@ public abstract class AbstractCharacter implements Serializable {
         this.mind = this.mind + mind;
     }
 
-    public void subctractMind(Integer mind) {
+    public void subtractMind(Integer mind) {
         this.mind = this.mind - mind;
         if (this.mind < 1) this.mind = 1;
     }
@@ -303,14 +334,17 @@ public abstract class AbstractCharacter implements Serializable {
     }
 
     public int getConditionCount() {
+        conditionCount.setValue(conCount);
         return conditionCount.get();
     }
 
     public void setConditionCount(int conditionCount) {
+        conCount = conditionCount;
         this.conditionCount.set(conditionCount);
     }
 
     public IntegerProperty conditionCountProperty() {
+        conditionCount.setValue(conCount);
         return conditionCount;
     }
 

@@ -28,10 +28,18 @@ public class Condition implements Serializable {
     };
 
     public static AbstractCondition Bleed = new AbstractCondition("Кровотечение","Цель медленно истекает кровью.",4,
-            "/com/stormtale/stormtale/images/rooster.png") {
+            "/com/stormtale/stormtale/images/drop.png") {
         @Override
         public void apply(AbstractCharacter character) {
             character.subtractHealth(2);
+        }
+    };
+
+    public static AbstractCondition Regen = new AbstractCondition("Обновление","Цель постепенно восстанавливает здоровье.",3,
+            "/com/stormtale/stormtale/images/heartcross.png") {
+        @Override
+        public void apply(AbstractCharacter character) {
+            character.addHealth(character.getStrength() / 2);
         }
     };
 }

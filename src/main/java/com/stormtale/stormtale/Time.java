@@ -28,6 +28,10 @@ public class Time implements Serializable {
         }
     }
 
+    public Integer getTime(){
+        return currentTime;
+    }
+
     public Time () {
         currentTime = 0;
         Day = 0;

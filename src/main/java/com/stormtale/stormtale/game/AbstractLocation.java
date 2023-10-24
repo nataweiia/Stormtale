@@ -6,19 +6,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public abstract class AbstractLocation implements Serializable {
-    Color color;
-    String name;
-    AbstractLocation connectedTop;
-    AbstractLocation connectedBottom;
-    AbstractLocation connectedRight;
-    AbstractLocation connectedLeft;
+    //Color color;
 
-    public AbstractLocation(Color color) {
-        this.color = color;
+    Integer[] color = new Integer[3];
+    String name;
+    AbstractLocation connectedTop = null;
+    AbstractLocation connectedBottom = null;
+    AbstractLocation connectedRight = null;
+    AbstractLocation connectedLeft = null;
+
+    public AbstractLocation(Integer r, Integer g, Integer b) {
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
     }
 
-    public AbstractLocation(Color color, String name){
-        this.color = color;
+    public AbstractLocation(Integer r, Integer g, Integer b, String name){
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
         this.name = name;
     }
 
@@ -26,12 +32,14 @@ public abstract class AbstractLocation implements Serializable {
 
     public abstract AbstractScene getScene();
 
-    public Color getColor() {
+    public Integer[] getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void setColor(Integer r, Integer g, Integer b) {
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
     }
 
     public String getName() {
@@ -72,5 +80,21 @@ public abstract class AbstractLocation implements Serializable {
 
     public void setConnectedTop(AbstractLocation connectedTop) {
         this.connectedTop = connectedTop;
+    }
+
+    public Boolean isConnectedBottom() {
+        return connectedBottom != null;
+    }
+
+    public Boolean isConnectedLeft() {
+        return connectedLeft != null;
+    }
+
+    public Boolean isConnectedRight() {
+        return connectedRight != null;
+    }
+
+    public Boolean isConnectedTop() {
+        return connectedTop != null;
     }
 }

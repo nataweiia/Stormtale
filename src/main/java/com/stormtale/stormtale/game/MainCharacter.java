@@ -27,7 +27,9 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
     public MainCharacter () {
         name[0] = "Неизвестно";
         level = 1;
+        conCount = 0;
         conditionCount.setValue(0);
+        money = 0;
     }
     public void setCharacterClass(String characterClass) {
         this.characterClass = characterClass;
@@ -39,13 +41,17 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 mind = 1;
                 charisma = 2;
                 addAbility(Ability.Thrust);
-                setMaxHealth(20);
-                setCurrentHealth(20);
+                setMaxHealth(60);
+                setCurrentHealth(60);
                 setMaxResource(10);
                 setCurrentResource(10);
                 setExp(0);
-                setMaxExp(10);
+                setMaxExp(50);
+                availableWeaponTypes.add("Меч");
+                availableWeaponTypes.add("Кинжал");
                 armorType = "Тяжелая";
+                setMaxInventory(15);
+                setMoney(100);
                 break;
             case "Ученый":
                 resourceType = "Мана";
@@ -59,9 +65,12 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 setMaxResource(20);
                 setCurrentResource(20);
                 setExp(0);
-                setMaxExp(10);
+                setMaxExp(50);
                 availableWeaponTypes.add("Фокусировка");
+                availableWeaponTypes.add("Кинжал");
                 armorType = "Легкая";
+                setMaxInventory(15);
+                setMoney(150);
                 break;
             case "Прохиндей":
                 resourceType = "Выносливость";
@@ -70,16 +79,19 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
                 mind = 2;
                 charisma = 3;
                 addAbility(Ability.Undercut);
-                setMaxHealth(20);
-                setCurrentHealth(20);
-                setMaxResource(10);
-                setCurrentResource(10);
+                setMaxHealth(50);
+                setCurrentHealth(50);
+                setMaxResource(15);
+                setCurrentResource(15);
                 setExp(0);
-                setMaxExp(10);
+                setMaxExp(50);
+                availableWeaponTypes.add("Меч");
+                availableWeaponTypes.add("Кинжал");
                 armorType = "Средняя";
+                setMaxInventory(15);
+                setMoney(15);
                 break;
         }
-        //add abilities, stats, etc
     }
 
     public String levelUp() {
@@ -88,29 +100,97 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
             case 2:
                 switch (characterClass) {
                     case "Самурай":
-                        //add ability to character
-                        //add text about ability to text
-                        text = text + "\nВы получаете способность " + "!"; //add ability name
-                        //same for each ability and each class and each level
-                        //increase hp, resource etc.
+                        text = text + "\nВы получаете способность Обновление, позволяющую постепенно восстанавливать здоровье" + "!\n";
+                        addAbility(Ability.Regeneration);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваша сила увеличивается на 2!\n";
+                        addStrength(2);
+                        text = text + "Ваша ловкость увеличивается на 1!\n";
+                        addDexterity(1);
+                        addProtection(1);
                         break;
                     case "Ученый":
+                        text = text + "\nВы получаете способность Сияние, позволяющую залечивать ваши раны!\n";
+                        addAbility(Ability.Shine);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваш разум увеличивается на 1!\n";
+                        addMind(1);
+                        text = text + "Ваша харизма увеличивается на 2!\n";
+                        addCharisma(2);
                         break;
                     case "Прохиндей":
+                        text = text + "\nВы получаете способность Уловка, позволяющую восстановить половину потерянного здоровья!\n";
+                        addAbility(Ability.Trick);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваша сила увеличивается на 1!\n";
+                        addStrength(1);
+                        text = text + "Ваша ловкость увеличивается на 1!\n";
+                        addDexterity(1);
+                        addProtection(1);
+                        text = text + "Ваш разум увеличивается на 1!\n";
+                        addMind(1);
+                        text = text + "Ваша харизма увеличивается на 1!\n";
+                        addCharisma(1);
                         break;
                 }
-                setMaxExp(200);
+                calculateResource();
+                setMaxExp(100);
                 break;
             case 3:
-                setMaxExp(300);
+                switch (characterClass) {
+                    case "Самурай":
+                        text = text + "\nВы получаете способность Размах, позволяющую наносить урон всем врагам" + "!\n";
+                        addAbility(Ability.Slash);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваша сила увеличивается на 2!\n";
+                        addStrength(2);
+                        text = text + "Ваша ловкость увеличивается на 1!\n";
+                        addDexterity(1);
+                        addProtection(1);
+                        break;
+                    case "Ученый":
+                        text = text + "\nВы получаете способность Перекачка, позволяющую одновременно наносить урон всем врагам и восстанавливать здоровье!\n";
+                        addAbility(Ability.Siphon);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваш разум увеличивается на 1!\n";
+                        addMind(1);
+                        text = text + "Ваша харизма увеличивается на 2!\n";
+                        addCharisma(2);
+                        break;
+                    case "Прохиндей":
+                        text = text + "\nВы получаете способность Укол, позволяющую наносить большой урон врагам, уже истекающим кровью" + "!";
+                        addAbility(Ability.Sting);
+                        text = text + "Ваше максимальное здоровье увеличивается на 10!\n";
+                        setMaxHealth(getMaxHealth() + 10);
+                        text = text + "Ваша сила увеличивается на 1!\n";
+                        addStrength(1);
+                        text = text + "Ваша ловкость увеличивается на 1!\n";
+                        addDexterity(1);
+                        addProtection(1);
+                        text = text + "Ваш разум увеличивается на 1!\n";
+                        addMind(1);
+                        text = text + "Ваша харизма увеличивается на 1!\n";
+                        addCharisma(1);
+                        break;
+                }
+                calculateResource();
+                setMaxExp(15000);
                 break;
             case 4:
-                setMaxExp(400);
+                calculateResource();
+                setMaxExp(250);
                 break;
             case 5:
-                setMaxExp(500);
+                calculateResource();
+                setMaxExp(400);
                 break;
             case 6:
+                calculateResource();
                 setMaxExp(600);
                 break;
         }
@@ -118,7 +198,18 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
     }
 
     public String description() {
-        return "Описание персонажа";
+        if (getCharacterClass() == "Самурай") {
+            return "Бесстрашный воин, верный слуга императора. Как капитану стражи форпоста Таки, вам поручили почетную задачу "+
+                    "оберегать жемчужину небесного дракона и найти для нее новое вместилище.";
+        } else if (getCharacterClass() == "Ученый") {
+            return "Молодой чиновник, занявший первое место на государственном экзамене, официальным императорским эдиктом назначенный" +
+                    " Смотрителем за Мистическими Вопросами на форпост Таки. Как специалисту в вопросах магии, работу над новым вместилищем для" +
+                    " небесного дракона было решено поручить вам.";
+        } else {
+            return "Разбойник, бродяга, фокусник, авантюрист. Вас можно описать любым из этих слов. Вы совершили множество преступлений, но " +
+                    "каждое из них следовало духу закона, хоть и не букве. В отсутствие лучших кандидатов, вас арестовали за одно из ваших многочисленных " +
+                    "преступлений и в наказание поручили восстановить тело небесного дракона. Хоть вы и недовольны арестом, дело как раз вам по душе.";
+        }
     }
 
     public void setMaxExp(Integer maxExp) {
@@ -191,5 +282,10 @@ public class MainCharacter extends AbstractCharacter implements Serializable {
 
     public Integer getMaxInventory() {
         return maxInventory;
+    }
+
+    public void calculateResource() {
+        setMaxResource(10 * level + 5 * mind);
+        setCurrentResource(10 * level + 5 * mind);
     }
 }

@@ -32,6 +32,7 @@ public abstract class AbstractNPC extends AbstractCharacter implements Serializa
         setCurrentResource(maxResource);
         setStrength(strength);
         setDexterity(dexterity);
+        setProtection(dexterity);
         setMind(mind);
         setCharisma(charisma);
         setConditionCount(0);
@@ -56,12 +57,26 @@ public abstract class AbstractNPC extends AbstractCharacter implements Serializa
         setCurrentResource(maxResource);
         setStrength(strength);
         setDexterity(dexterity);
+        setProtection(dexterity);
         setMind(mind);
         setCharisma(charisma);
         setExpReward(expReward);
         setConditionCount(0);
         for (int i = 0; i < abilities.length; i++) {
             addAbility(abilities[i]);
+        }
+        setHealthPercentage(1.0);
+        setResourcePercentage(1.0);
+    }
+
+    public AbstractNPC (String[] name,
+                        Boolean female,
+                        AbstractItem[] inventory) {
+        setName(name);
+        setFemale(female);
+        setConditionCount(0);
+        for (int i = 0; i < inventory.length; i++) {
+            addItem(inventory[i]);
         }
         setHealthPercentage(1.0);
         setResourcePercentage(1.0);

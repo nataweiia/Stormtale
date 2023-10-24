@@ -22,7 +22,7 @@ public class Combat implements Serializable {
 
     AbstractScene nextScene;
 
-    public Combat (MainCharacter mc, ArrayList<Companion> companions, ArrayList<AbstractNPC> enemies) {
+    public Combat (MainCharacter mc, ArrayList<AbstractCompanion> companions, ArrayList<AbstractNPC> enemies) {
         this.mc = mc;
         this.companions.addAll(companions);
         this.enemies.addAll(enemies);
@@ -32,12 +32,14 @@ public class Combat implements Serializable {
     public String turn () {
         turn++;
         String text = "";
+        mc.addResource(2);
         if (!mc.getConditions().isEmpty()) {
             tickConditions(mc,text);
         }
         if (companions != null) {
             for (AbstractNPC companion: companions
                  ) {
+                companion.addResource(2);
                 if (!companion.getConditions().isEmpty()) {
                     tickConditions(companion,text);
                 }
@@ -45,6 +47,7 @@ public class Combat implements Serializable {
         }
         for (AbstractNPC enemy: enemies
              ) {
+            enemy.addResource(2);
             if (!enemy.getConditions().isEmpty()) {
                 tickConditions(enemy,text);
             }
@@ -78,11 +81,22 @@ public class Combat implements Serializable {
     }
 
     public void tickConditions (AbstractCharacter character, String text) {
-        for (AbstractCondition condition: character.getConditions()) {
+//        for (AbstractCondition condition: character.getConditions()) {
+//            condition.tick();
+//            condition.apply(character);
+//            text = text + character.getName()[0] + condition.getDescription();
+//            if (condition.getDuration() == 0) character.removeCondition(condition);
+//        }
+        Iterator<AbstractCondition> iterator = character.getConditions().iterator();
+        while (iterator.hasNext()){
+            AbstractCondition condition = iterator.next();
             condition.tick();
             condition.apply(character);
             text = text + character.getName()[0] + condition.getDescription();
-            if (condition.getDuration() == 0) character.removeCondition(condition);
+            if (condition.getDuration() == 0) {
+                character.countDownConditions();
+                iterator.remove();
+            }
         }
     }
 
